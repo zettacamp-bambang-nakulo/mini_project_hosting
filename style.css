@@ -1,3 +1,8 @@
+body{
+	background-color: #ffffff;
+	margin: 0px;
+	padding: 0px;
+}
 .topnav {
 	background-color: black;
 	overflow: hidden;
@@ -45,6 +50,7 @@ table{
 	padding: 50px;
 }
 
+
 .box{
 	padding: 50px;
 	padding-right: 50px;
@@ -68,4 +74,10 @@ img{
 .img-logo1{
 	width: 7%;
 	height: 7%;
+}
+
+.table1{
+	width: 100%;
+	height: 50%;	
+	margin-top: 0%;
 }
