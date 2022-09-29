@@ -9,28 +9,19 @@
         var id_nama = document.getElementById("nama").value;
         var id_belakang= document.getElementById('namabelakang').value;
         var id_bio = document.getElementById("bio").value;
-        var id_gen = document.getElementById("gen").value;
+        var id_gen = document.querySelector('input[name="gendre"]:checked').value;
         var id_email=document.getElementById("email").value;
         var id_telepon=document.getElementById("telepon").value;
         var id_age=document.getElementById("agee").value;
         var id_url=document.getElementById("urll").value;
-        const _id_img= document.querySelector("img");
-        var id_upload="";
-        img.addEventListener("change", function(){
-          const reader = new FileReader();
-          reader.addEventListener("load",() => {
-            id_upload = reader.result;
-            document.querySelector("img1").style.backgroundImage = 'url(${id_upload})';
-          });
-          reader.readAsDataURL(this.file[0]);
-        });
-        // var id_img= document.getElementById("img").value;
+        
         
         document.getElementById("belakang2").innerHTML= id_belakang;
         var tampil_bio = id_bio;
         document.getElementById("bio3").innerHTML= tampil_bio;
-        var tampil_gen = id_gen;
+        var tampil_gen= id_gen;
         document.getElementById("gen4").innerHTML= tampil_gen;
+       
         var tampil_email = id_email;
         document.getElementById("email5").innerHTML= tampil_email;
         var tampil_telepon = id_telepon;
@@ -68,10 +59,10 @@
                             <textarea id="bio" name="bio"></textarea>
                             <br>
                             <br>
-                            <label>Gendre:</label>
-                            <input type="radio" id="gen" name="fav_language" value="Male">
+                            Gendre:
+                            <input type="radio" id="gen" name="gendre" value="Male">
                             <label for="gendre">Male</label>
-                            <input type="radio" id="gen" name="fav_language" value="Female">
+                            <input type="radio" id="gen" name="gendre" value="Female">
                             <label for="gendre">Female</label>
                             <br>
                             <br>
@@ -93,7 +84,7 @@
                             <br>
                             <br>
                             <label for="img">Select image:</label>
-                            <input type="file" id="img" name="img" accept="image/*" >
+                            <input type="file" id="image-input" accept="image/jpeg, image/png, image/jpg">
                         </form>
                     </td>
                 </tr>
@@ -165,10 +156,7 @@
                     </td>
                     
                     <td>
-                       <div id="img1">
-
-                       </div>
-                    
+                        <img src="wajah.jpg" id="display-image" style="width: 50px;">
                     </td>
                 </tr>
             </table>
