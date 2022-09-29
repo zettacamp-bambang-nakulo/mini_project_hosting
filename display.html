@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>INDEKS</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<script type="text/javascript">
+    function tampil(){
+        var id_nama = document.getElementById("nama").value;
+        var id_belakang= document.getElementById('namabelakang').value;
+        var id_bio = document.getElementById("bio").value;
+        var id_gen = document.getElementById("gen").value;
+        var id_email=document.getElementById("email").value;
+        var id_telepon=document.getElementById("telepon").value;
+        var id_age=document.getElementById("agee").value;
+        var id_url=document.getElementById("urll").value;
+        const _id_img= document.querySelector("img");
+        var id_upload="";
+        img.addEventListener("change", function(){
+          const reader = new FileReader();
+          reader.addEventListener("load",() => {
+            id_upload = reader.result;
+            document.querySelector("img1").style.backgroundImage = 'url(${id_upload})';
+          });
+          reader.readAsDataURL(this.file[0]);
+        });
+        // var id_img= document.getElementById("img").value;
+        
+        document.getElementById("belakang2").innerHTML= id_belakang;
+        var tampil_bio = id_bio;
+        document.getElementById("bio3").innerHTML= tampil_bio;
+        var tampil_gen = id_gen;
+        document.getElementById("gen4").innerHTML= tampil_gen;
+        var tampil_email = id_email;
+        document.getElementById("email5").innerHTML= tampil_email;
+        var tampil_telepon = id_telepon;
+        document.getElementById("tel7").innerHTML= tampil_telepon;
+        var tampil_age = id_age;
+        document.getElementById("agee6").innerHTML= tampil_age;
+        var tampil_url = id_url;
+        document.getElementById("urll8").innerHTML= tampil_url;
+        
+    }
+</script>
+<body>
+    <header>
+        <!---navigation--->
+        <div class="topnav">
+            <a class="active" href="">From</a>
+            <a href="item.html">Item</a>
+        </div>
+    </header>
+    <main>
+    <section class="A">
+        <!---From-->
+            <table class="table-from1" border="1" style="margin: 10px; width: 100%;border-collapse: collapse;">
+                <h1>From</h1>
+                <tr>
+                    <td>
+                        <form>
+                            <label for="nama">First name:</label><br>
+                            <input type="text" id="nama" nama="fname"><br>
+                            <label for="belakang">Last name:</label><br>
+                            <input type="text" id="namabelakang" name="nama">
+                            <br>
+                            <label>Biography</label>
+                            <br>
+                            <textarea id="bio" name="bio"></textarea>
+                            <br>
+                            <br>
+                            <label>Gendre:</label>
+                            <input type="radio" id="gen" name="fav_language" value="Male">
+                            <label for="gendre">Male</label>
+                            <input type="radio" id="gen" name="fav_language" value="Female">
+                            <label for="gendre">Female</label>
+                            <br>
+                            <br>
+                            <label for="email">Email:</label><br>
+                            <input type="email" id="email" name="email">
+                            <br>
+                            <br>
+                            <label for="telepon">Telepon</label><br>
+                            <input type="tel" id="telepon" name="telepon">
+                            <br>
+                            <br>
+                            <label for="agee">Age</label><br>
+                            <input type="number" id="agee" name="age">
+                            <br>
+                            <br>
+                            <label for="urll">Url:</label><br>
+                            <input type="url" id="urll" name="urll">
+                            <input type="button" onclick="tampil()" value="kirim">
+                            <br>
+                            <br>
+                            <label for="img">Select image:</label>
+                            <input type="file" id="img" name="img" accept="image/*" >
+                        </form>
+                    </td>
+                </tr>
+            </table>
+        </section>
+        <section class="B">
+            <!--------output-------->
+            <table border="1" style="margin: 10px; width: 100%;border-collapse: collapse;">
+                <tr>
+                    <tr>
+                        <td>
+                        <h2>first name</h2>
+                        </td>
+                        <td>
+                            <h2>last name</h2> 
+                        </td>
+                        <td>
+                            <h2>Biography</h1> 
+                        </td>
+                        <td>
+                            <h2>Gendre</h2> 
+                        </td>
+                        <td>
+                            <h2>Email</h2>
+                        </td>
+                        <td>
+                            <h2>Age</h2>
+                        </td>
+                        <td>
+                            <h2>Telepon</h2>
+                        </td>
+                        <td>
+                            <h2>Url</h2>
+                        </td>
+                        <td>
+                            <h2>Image</h2>
+                        </td>
+                    </tr>
+                    <td>
+                        <span id="nama1"></span>
+                    </td>
+                
+                    <td>
+                        <span id="belakang2"></span>
+                    </td>
+                    
+                    <td>
+                        <span id="bio3"></span>
+                    </td>
+                    
+                    <td>
+                        <span id="gen4"></span>
+                    </td>
+                
+                    <td>
+                        <span id="email5"></span>
+                    </td>
+                    
+                    <td>
+                        <span id="agee6"></span>
+                    </td>
+                    
+                    <td>
+                        <span id="tel7"></span>
+                    </td>
+                    
+                    <td>
+                        <span id="urll8"></span>
+                    </td>
+                    
+                    <td>
+                       <div id="img1">
+
+                       </div>
+                    
+                    </td>
+                </tr>
+            </table>
+        </section>
+    </main>
+</body>
+</html>
