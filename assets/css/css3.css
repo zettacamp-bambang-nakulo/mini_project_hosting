@@ -74,10 +74,7 @@ img{
     height: 120px;
 
 }
-.card img{
-    width: 100%;
 
-}
 .card-one {
     display: flex;
     flex-direction: column;
@@ -118,6 +115,10 @@ footer > a{
 .box{
     border: 1px solid black;
     text-align: center;
+}
+ 
+.box > .img-about{
+    width: 200px;
 }
 
 footer > p{
