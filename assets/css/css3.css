@@ -1,0 +1,130 @@
+
+header h1{
+    text-align: center;
+    margin: 2px 0 0 0;
+}
+.card-one {
+    box-shadow: 0 8px 8px 0 rgba(0,0,0,0.5);
+    transition: 0.3s;
+    width: 250px;
+    margin: 0px 3rem 1rem 3rem;
+    border-radius: 10px;
+    background-color:rgb(238, 151, 22);
+    border: 1px solid black;
+    padding: 10px;
+
+
+}
+.card-two {
+    box-shadow: 0 8px 8px 0 rgba(0,0,0,0.5);
+    transition: 0.3s;
+    width: 250px;
+    margin: 1rem 3rem 1rem 3rem;
+    border-radius: 10px;
+    background-color:rgb(238, 151, 22);
+    border: 1px solid black;
+    padding: 10px;
+
+
+}
+.card-three {
+    box-shadow: 0 8px 8px 0 rgba(0,0,0,0.5);
+    transition: 0.3s;
+    width: 250px;
+    margin: 1rem 3rem 0rem 3rem;
+    border-radius: 10px;
+    background-color:rgb(238, 151, 22);
+    border: 1px solid black;
+    padding: 10px;
+
+
+}
+.card-one:hover {
+    box-shadow: 10px 8px 16px 0 rgba(0,0,0,0.2);
+}
+.card-two:hover {
+    box-shadow: 10px 8px 16px 0 rgba(0,0,0,0.2);
+}
+.card-three:hover{
+    box-shadow: 10px 8px 16px 0 rgba(0,0,0,0.2);
+}
+.product {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+.btn{
+    background-color: black;
+    color: aliceblue;
+    width: 100px;
+    height: 50px;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 10%;
+    text-align: center;
+    cursor: pointer;
+
+ 
+}
+
+img{
+    padding: 30px;
+    width: 200px;
+    height: 120px;
+
+}
+.card img{
+    width: 100%;
+
+}
+.card-one {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-two {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-three{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+footer {
+    background-color: black;
+    width: 100%;
+    height: 30px;
+    text-align: center;
+
+}
+footer > a{
+    padding: 1px;
+    margin: 10px;
+    color: white;
+}
+
+.items{
+    border: 1px solid black;
+    border-collapse: collapse;
+    margin: 10px;
+    width: 98.5%;
+}
+
+.box{
+    border: 1px solid black;
+    text-align: center;
+}
+
+footer > p{
+    color: white;
+}
+
+.judul::first-letter{
+    color: rgb(9, 231, 9);
+    font-size: xx-large;
+}
