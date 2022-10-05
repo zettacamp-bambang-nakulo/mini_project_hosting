@@ -113,12 +113,19 @@ footer > a{
 }
 
 .box{
-    border: 1px solid black;
     text-align: center;
+    border: 1px solid black;
+    border-radius: 5%;
+    background-color: rgb(2, 108, 116);
+    padding: 50px;
 }
  
 .box > .img-about{
     width: 200px;
+}
+
+.box1 {
+    text-align: center;
 }
 
 footer > p{
@@ -128,4 +135,9 @@ footer > p{
 .judul::first-letter{
     color: rgb(9, 231, 9);
     font-size: xx-large;
+}
+
+.main-about{
+    border: 1px solid black;
+    border-radius: 5%;
 }
