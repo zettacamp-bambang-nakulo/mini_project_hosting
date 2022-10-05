@@ -23,9 +23,16 @@
 .container h4{
     padding: 8px 15px 10px;
     text-align: center;
+    font-style: italic;
+    
 
 }
-
+.container {
+    font-size: 100px;
+}
+.container > p{
+    font-size: 10px;
+}
 .card4{
     display: flex;
     flex-wrap: wrap;
