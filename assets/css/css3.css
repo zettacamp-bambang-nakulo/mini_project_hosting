@@ -1,29 +1,50 @@
 
-header h1{
+header > .title{
     text-align: center;
-    margin: 2px 0 0 0;
+    margin: 0rem;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top:0;
 }
+.tranfaran{
+    opacity: 0.8;
+}
+.bg {
+    background-color: rgb(173, 169, 169);
+}
+.m-b{
+    margin-bottom: 10px;
+}
+.m-t{
+    margin-top: 100px;
+}
+
 .card-one {
     box-shadow: 0 8px 8px 0 rgba(0,0,0,0.5);
     transition: 0.3s;
     width: 250px;
-    margin: 0px 3rem 1rem 3rem;
     border-radius: 10px;
     background-color:rgb(238, 151, 22);
+}
+.margin{
+    margin: 2rem 4rem 2rem 4rem;
+}
+.padding{
+    padding: 1rem;
+}
+.border1{
     border: 1px solid black;
-    padding: 10px;
-
-
+}
+.text{
+    font-size: 30px;
 }
 .card-two {
     box-shadow: 0 8px 8px 0 rgba(0,0,0,0.5);
     transition: 0.3s;
     width: 250px;
-    margin: 1rem 3rem 1rem 3rem;
     border-radius: 10px;
     background-color:rgb(238, 151, 22);
-    border: 1px solid black;
-    padding: 10px;
 
 
 }
@@ -31,11 +52,8 @@ header h1{
     box-shadow: 0 8px 8px 0 rgba(0,0,0,0.5);
     transition: 0.3s;
     width: 250px;
-    margin: 1rem 3rem 0rem 3rem;
     border-radius: 10px;
     background-color:rgb(238, 151, 22);
-    border: 1px solid black;
-    padding: 10px;
 
 
 }
@@ -54,7 +72,7 @@ header h1{
     justify-content: center;
   }
 
-.btn{
+.btn {
     background-color: black;
     color: aliceblue;
     width: 100px;
@@ -64,11 +82,9 @@ header h1{
     border-radius: 10%;
     text-align: center;
     cursor: pointer;
-
- 
 }
 .btn2 {
-    border: 1px solid white;
+
     background-color: transparent;
     color: white;
     margin-top: 5px;
@@ -112,6 +128,7 @@ footer {
     text-align: center;
 
 }
+
 footer > a{
     padding: 1px;
     margin: 10px;
@@ -154,3 +171,55 @@ footer > p{
     border: 1px solid black;
     border-radius: 5%;
 }
+
+/*stock and sold*/
+.column {
+    float: left;
+    width: 33.33%;
+    padding: 25px;
+    box-shadow: 0 8px 8px 0 rgba(0,0,0,0.5);
+    transition: 0.3s;
+    width: 450px;
+    border-radius: 10px;
+    background-color:rgb(235, 238, 227);
+    
+  }
+.stock{
+    display: flex;
+}
+.container{
+    display: flex;
+    
+}
+
+.posi{
+    width: 100%;
+    overflow: auto;
+    height: 800px;
+ 
+}
+
+.title2{
+    border: 1px solid black;
+    box-shadow: 2px 5px 0px rgb(7, 28, 48);
+    width: 150px;
+    text-align: center;
+    height: 30px;
+    border-radius: 20px;
+
+}
+.head{
+    display: flex;
+    justify-content: center;
+}
+.color{
+    background-color: brown;
+    color: azure;
+}
+.color2{
+    background-color: green;
+    color: azure;
+}
+/* li{
+    list-style: none;
+} */
