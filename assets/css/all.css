@@ -1,0 +1,193 @@
+/* indeks */
+*{
+    margin: 0;
+}
+header{
+    background-color: teal;
+    position: sticky;
+
+}
+header > .title{
+    color: aliceblue;
+    padding: 1rem;
+    text-shadow: 6px 8px black;
+}
+header span{
+    position: absolute;
+    right: 5rem;
+    top: 2rem;
+}
+span > a{
+    color: aliceblue;
+}
+
+.mg{
+    margin: 20px;
+}
+.mg-top{
+    margin-top: 50px;
+}
+
+.container{
+    display: flex;
+    justify-content: center;
+
+}
+
+.judul{
+    margin-top: 5rem;
+    text-align: center;
+}
+.judul > .name-b{
+    font-size: xx-large;
+}
+.judul p{
+    text-align: left;
+}
+.name-b::first-letter{
+    color: rgb(6, 160, 57);
+}
+
+ /* css card */
+ .populer{
+    text-align: center;
+ }
+ img{
+    width: 200px;
+    height: 150px;
+    justify-content: center;
+ }
+ .card-one {
+    box-shadow: 0 8px 8px 0 rgba(0,0,0,0.5);
+    transition: 0.3s;
+    width: 350px;
+    border-radius: 10%;
+    text-align: center;
+}
+.card-one:hover {
+    box-shadow: 10px 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+.card {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+.view >a{
+    text-align: right;
+    color: teal;
+}
+
+footer {
+    background-color: teal;
+    width: 100%;
+    height: 50px;
+    text-align: center;
+
+}
+
+footer > a{
+    padding: 1px;
+    margin: 10px;
+    color: white;
+}
+
+.btn2 {
+    background-color: transparent;
+    color: white;
+    margin-top: 5px;
+    padding: 10px;
+    cursor: pointer;
+}
+.btn2:hover{
+    background-color: aliceblue;
+    color: black;
+    
+}
+
+
+
+/* Shopping List */
+
+.btn{
+    background-color:teal;
+    width: 5rem;
+    height: 1rem;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center;
+    justify-content: right;
+
+
+}
+
+/* add product */
+.submit{
+    text-align: center;
+    margin-top: 20px;
+    margin-left: 50px;
+    
+}
+.sbm{
+    cursor: pointer;
+}
+input:focus{
+    background-color: aqua;
+}
+input:invalid {
+    border-color: red;
+  }
+input:valid{
+    border-color: blue;
+}
+.disable:disabled{
+    opacity:0.2 ;
+    text-align: center;
+    margin-top: 20px;
+    margin-left: 51%;
+}
+
+.bg{
+    background-color: teal;
+    color: white;
+}
+.file{
+    width: 30px;
+
+
+}
+
+.upload{
+    border: 1px dotted black;
+    width: 25%;
+    height: 50px;
+    margin-left: 20%;
+    margin-right: 20px;
+
+}
+
+
+/* css contact */
+.box{
+    margin-top: 10px;
+    text-align: center;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 50px;
+}
+
+/* css about */
+.main-about{
+    margin-left: 100px;
+    margin-right: 100px;
+    border: 1px solid black;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.image img{
+    width: 50%;
+    height: 50%;
+}
+

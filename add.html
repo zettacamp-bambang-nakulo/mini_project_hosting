@@ -4,28 +4,41 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-    <link rel="stylesheet" href="assets/css/all.css">
+    <title>Add Items</title>
+    <link rel="stylesheet" type="text/css" href="assets/css/all.css">
 </head>
 <body>
     <header>
         <h1 class="title "> Twins <br>Hoodie</h1>
         <span>
-            <a href="shopping.html" style="text-decoration: none;">Shopping List</a>
+            <a target="_blank" href="shopping.html">Shopping List</a>
         </span>
     </header>
     <main>
-        <section class="container">
-            <div class="video mg">
-                <iframe width="560" height="315" src="https://www.youtube.com/embed/aTyJrhP_ZME" ></iframe>
+        <section class="from">
+            <div class="list mg mg-top">
+                <a href="shopping.html" style="text-decoration: none; color: teal;">&larr; Shopping List</a>
             </div>
-            <div class="judul">
-                <h1 class="name-b"> Twins Hoodie</h1>
-                <p> hello we are from a twin hoodie company that will show you some used but still wearable hoodies with famous brands that are already sold in the market</p>
+            <h2 class="mg mg-top"> ADD NEW ITEMS</h2>
+            <div class="submit">
+                <button class=" sbm  bg" type="submit">&#43; Submit</button>
             </div>
+                <button class=" sbm bg disable" type="submit" disabled>&#43; Submit</button>
+            <form class="add mg">
+                <label>Product Name</label><br>
+                <input type="text" name="name-p" required>
+                <br>
+                <br>
+                <label>Price</label><br>
+                <input type="text" name="price" required>
+                <div class="upload">
+                    <label class="submit bg" style="border: 1px solid black;"> Upload Product Image &#43;
+                    <input class="file" type="file" name="image" style="visibility: hidden;">
+                    </label>
+                </div>
+            </form>
         </section>
-        <h1 class="populer mg-top"> Populer Product</h1>
-        
+        <h2>Product Review</h2>
         <section class="card mg-top">
             <div class="card-one">
                     <img src="https://images.squarespace-cdn.com/content/v1/51c322cfe4b032aad705a0fc/1642096058736-J6V8HNHZOH0BODMNOM2J/G185B_Black_FF.png?format=1000w" alt="image">
@@ -37,20 +50,17 @@
             <div class="card-one">
                         <img src="https://www.pngitem.com/pimgs/m/157-1577468_transparent-champion-png-black-champion-hoodie-transparent-png.png" alt="image">
                         <div class="product-detail">
-                            <h4><b>Campione</b></h4> 
+                            <h4><b>Campion</b></h4> 
                             <p>Rp 250.000</p>
                         </div>
             </div>
-                <div class="card-one">
+            <div class="card-one">
                         <img src="https://media.karousell.com/media/photos/products/2022/7/7/hoodie_nike_sb_1657187802_46bd4a9b.jpg" alt="image">
                         <div class="product-detail">
                             <h4><b>Nike</b></h4> 
-                            <p>Rp 200.00</p>
+                            <p>Rp 350.000</p>
                         </div>
-                </div>
-                <div class="view">
-                    <a target="_blank" href="shopping.html" style="text-decoration-line: none;"> View List &rarr;</a>
-                </div>
+            </div>
         </section>
     </main>
     <footer class="mg-top">
