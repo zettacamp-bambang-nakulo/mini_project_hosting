@@ -1,0 +1,223 @@
+
+header {
+    text-align: center;
+    margin: 0rem;
+    position: sticky;
+    top:0;
+}
+.tranfaran{
+    opacity: 0.8;
+}
+.bg {
+    background-color: rgb(173, 169, 169);
+}
+.m-b{
+    margin-bottom: 10px;
+}
+.m-t{
+    margin-top: 100px;
+}
+
+.card-one {
+    box-shadow: 0 8px 8px 0 rgba(0,0,0,0.5);
+    transition: 0.3s;
+    width: 250px;
+    border-radius: 10px;
+    background-color:rgb(238, 151, 22);
+}
+.margin{
+    margin: 2rem 4rem 2rem 4rem;
+}
+.padding{
+    padding: 1rem;
+}
+.border1{
+    border: 1px solid black;
+}
+.text{
+    font-size: 30px;
+}
+.card-two {
+    box-shadow: 0 8px 8px 0 rgba(0,0,0,0.5);
+    transition: 0.3s;
+    width: 250px;
+    border-radius: 10px;
+    background-color:rgb(238, 151, 22);
+
+
+}
+.card-three {
+    box-shadow: 0 8px 8px 0 rgba(0,0,0,0.5);
+    transition: 0.3s;
+    width: 250px;
+    border-radius: 10px;
+    background-color:rgb(238, 151, 22);
+
+
+}
+.card-one:hover {
+    box-shadow: 10px 8px 16px 0 rgba(0,0,0,0.2);
+}
+.card-two:hover {
+    box-shadow: 10px 8px 16px 0 rgba(0,0,0,0.2);
+}
+.card-three:hover{
+    box-shadow: 10px 8px 16px 0 rgba(0,0,0,0.2);
+}
+.product {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+.btn {
+    background-color: black;
+    color: aliceblue;
+    width: 100px;
+    height: 50px;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 10%;
+    text-align: center;
+    cursor: pointer;
+}
+.btn2 {
+
+    background-color: transparent;
+    color: white;
+    margin-top: 5px;
+    padding: 10px;
+    cursor: pointer;
+}
+.btn2:hover{
+    background-color: aliceblue;
+    color: black;
+    
+}
+
+img{
+    padding: 30px;
+    width: 200px;
+    height: 120px;
+
+}
+
+.card-one {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-two {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-three{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+footer {
+    background-color: black;
+    width: 100%;
+    height: 50px;
+    text-align: center;
+
+}
+
+footer > a{
+    padding: 1px;
+    margin: 10px;
+    color: white;
+}
+
+.items{
+    border: 1px solid black;
+    border-collapse: collapse;
+    margin: 10px;
+    width: 98.5%;
+}
+
+.box{
+    text-align: center;
+    border: 1px solid black;
+    border-radius: 5%;
+    background-color: rgb(2, 108, 116);
+    padding: 50px;
+}
+ 
+.box > .img-about{
+    width: 200px;
+}
+
+.box1 {
+    text-align: center;
+}
+
+footer > p{
+    color: white;
+}
+
+.judul::first-letter{
+    color: rgb(9, 231, 9);
+    font-size: xx-large;
+}
+
+.main-about{
+    border: 1px solid black;
+    border-radius: 5%;
+}
+
+/*stock and sold*/
+.column {
+    float: left;
+    width: 33.33%;
+    padding: 25px;
+    box-shadow: 0 8px 8px 0 rgba(0,0,0,0.5);
+    transition: 0.3s;
+    width: 450px;
+    border-radius: 10px;
+    background-color:rgb(235, 238, 227);
+    
+  }
+.stock{
+    display: flex;
+}
+.container{
+    display: flex;
+    
+}
+
+.posi{
+    width: 100%;
+    overflow: auto;
+    height: 800px;
+ 
+}
+
+.title2{
+    border: 1px solid black;
+    box-shadow: 2px 5px 0px rgb(7, 28, 48);
+    width: 150px;
+    text-align: center;
+    height: 30px;
+    border-radius: 20px;
+
+}
+.head{
+    display: flex;
+    justify-content: center;
+}
+.color{
+    background-color: brown;
+    color: azure;
+}
+.color2{
+    background-color: green;
+    color: azure;
+}
+/* li{
+    list-style: none;
+} */
