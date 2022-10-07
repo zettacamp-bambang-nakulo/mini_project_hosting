@@ -191,3 +191,14 @@ input:valid{
     height: 50%;
 }
 
+@media (max-width:768px){
+   iframe{
+    width: 300px;
+   }
+   .container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+   }
+}
