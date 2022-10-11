@@ -35,5 +35,7 @@ function  bookpurchasing(title, author,deskripsi, price, dicount, tax, sale){
 
 
 
+
 }
 bookpurchasing("oke", "saya","javascrip day 1 zettacamp", 20000, 0.1, 50, true,);
+
