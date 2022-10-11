@@ -27,12 +27,12 @@ function  bookpurchasing(title, author,deskripsi, price, dicount, tax, sale, sto
     console.log("title:",ti)
     console.log("author:", aut)
     console.log("deskripsi:",des)
-    console.log("price:","Rp.", price)
+    console.log("price:","Rp.", price.toLocaleString("ID"))
     console.log("dicount:",dis,"%")
     console.log("tax:",t,"%")
-    console.log("total diskon:"+" Rp.", amoundis);
-    console.log("Total:"+"Rp.",priceall)
-    console.log("total tax:", taxaff)
+    console.log("total diskon:"+" Rp.", amoundis.toLocaleString("ID"));
+    console.log("Total:"+"Rp.",priceall.toLocaleString("ID"))
+    console.log("total tax:", taxaff.toLocaleString("ID"))
     console.log("sale :", sale )
     
     for (let i = 1; i <=jumlah; i++) {
@@ -46,7 +46,7 @@ function  bookpurchasing(title, author,deskripsi, price, dicount, tax, sale, sto
             stock= stock-1;
             jum-=1
             console.log("jumlah:", jum)
-            console.log("total price:",jumst)
+            console.log("total price:",jumst.toLocaleString("ID"))
             console.log("stock Update:",stock)
             if(stock > 0){
                 console.log("--buku masih bisa dibeli--")  
