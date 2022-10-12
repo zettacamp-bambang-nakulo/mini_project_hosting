@@ -65,4 +65,4 @@ function  bookpurchasing(title, author,deskripsi, price, dicount, tax, sale, sto
 
 
 }
-bookpurchasing("oke", "saya","javascrip day 1 zettacamp", 20000, 0.1, 50, true,5,3);
+bookpurchasing("oke", "saya","javascrip day 1 zettacamp", 20000, 0.1, 50, true,5,6);
