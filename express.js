@@ -57,7 +57,7 @@ app.get("/book",(req, res)=>{
     res.end()
 })
 
-// app.use((req,res)=>{
-//     res.send("halaman tidak ditemukan")
-// })
+app.use((req,res)=>{
+    res.send("halaman tidak ditemukan")
+})
 
