@@ -14,7 +14,7 @@ let book = {
 
 };
 
-function purchasebook(book){
+async function purchasebook(book){
     // harga diskon
    const amdiscount= book.price * book.discon / 100 ;
 
@@ -87,7 +87,7 @@ async function creditbook(){
             
             // harga cicilan/bulan berdasarkan harga buku terakhir
             let creditPrice = book.price / book.credit;
-
+           
             // Array kosong untuk di push
             let toc = [];
 

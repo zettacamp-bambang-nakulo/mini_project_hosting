@@ -4,18 +4,7 @@ const { resolve } = require('path')
 const app = express()
 const port= 8000
 const creditbook=require("./app")
-const book = {
-    title: "onepice"
-    ,author:"ODA"
-    ,deskripsi:"I want to be the pirate king"
-    ,price: 31000
-    ,discon:5
-    ,tax:10
-    ,sale: true
-    ,stock:6
-    ,jumlah:6
-
-}
+const book = require("./app")
 
 
 app.listen(port)
