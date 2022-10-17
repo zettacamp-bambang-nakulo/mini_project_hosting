@@ -1,98 +1,135 @@
-function  bookpurchasing(title, author,deskripsi, price, dicount, tax, sale, stock, jumlah, credit){
-    
-    const ti = title;
-    const aut= author;
-    const des= deskripsi;
-    
-    let pri=price;
+let book = {
+    title: "onepice",
+    author:"ODA",
+    deskripsi:"I want to be the pirate king",
+    price: 30000,
+    discon:5,
+    tax:10,
+    sale: true,
+    stock:6,
+    beli:5,
+    totalpricepur:0,
+    acutalpur:0,
+    credit:10
 
-    // diskon/
-    const dis= dicount;
-    let amoundis= pri * dicount
+};
 
-    // after dicount
-    const priceall= pri -amoundis;
+function purchasebook(book){
+    // harga diskon
+   const amdiscount= book.price * book.discon / 100 ;
 
-    // Amount of tax
-    const t= tax;
+    //harga setelah diskon
+    const afterdiscount= book.price - amdiscount;
 
-    // Price after tax
-    const taxaff=pri*tax /100
-    
-    const sal= sale;
+    //harga pajak
+    const amtax= book.tax / 100 * book.price;
 
-    let st= stock;
-    let jum= jumlah;
+    //harga setelah pajak
+    const alltax = book.price+amtax;
 
-    console.log("title:",ti)
-    console.log("author:", aut)
-    console.log("deskripsi:",des)
-    console.log("price:","Rp.", price.toLocaleString("ID"))
-    console.log("dicount:",dis,"%")
-    console.log("tax:",t,"%")
-    console.log("total diskon:"+" Rp.", amoundis.toLocaleString("ID"));
-    console.log("Total:"+"Rp.",priceall.toLocaleString("ID"))
-    console.log("total tax:", taxaff.toLocaleString("ID"))
-    console.log("sale :", sale )
-    
-    for (let i = 1; i <=jumlah; i++) {
-            jumst= pri * i;
-            console.log("-----------------------")
-            console.log("barang yang dibeli",);
-            console.log("-----------------------")
+    //total harga setelah ada diskon dan pajak
+    const total =book.price + amtax - amdiscount;
 
+    //total harga semua setalah pembelian
+    let  totalpricepur = 0;
+
+    //pembelian asli
+    let acutalpur = 0;
+
+    //output hasil data
+    console.log("Title:", book.title);
+    console.log("Author:", book.author);
+    console.log("Discription:",book.deskripsi)
+    console.log("Price:", book.price)
+    console.log("Stock:",book.stock)
+    console.log("Sold:", book.beli)
+    console.log("Discount:",book.discon)
+    console.log("Amount Of Discount:"+"Rp",amdiscount )
+    console.log("After Discount: Rp", afterdiscount)
+    console.log("Tax:", book.tax)
+    console.log("Status:",book.sale)
+    console.log("Amount of Tax: Rp", amtax.toLocaleString("ID"))
+    console.log("After Tax:Rp", alltax)
+    console.log("Total:Rp", total)
+
+    //jika penjualan true
+    if(book.sale == true){
+        //perulangan
+        for(let i = 1; i <= book.beli; i++){
+            totalpricepur= total * i;
+            acutalpur-= 1;
+            book.stock= book.stock-1;
+
+            if(book.stock > 0){
+                console.log("--buku masih bisa dibeli--")
             
-            
-            stock= stock-1;
-            jum-=1
-            console.log("jumlah:", jum)
-            console.log("total price:",jumst.toLocaleString("ID"))
-            console.log("stock Update:",stock)
-            if(stock > 0){
-                console.log("--buku masih bisa dibeli--")  
-            } else{
-                console.log("--Buku sudah habis--")
-                break;
-
+            }else{
+            console.log("--Buku sudah habis--")
+            break;
             }
-        }
-        //tenteukan credit
-        if (credit <13){
-            console.log("jika ingin credit",credit,"bulan");
 
-            //harga credit/bulan
-            let creditprice= jumst/ credit;
+        console.log("---------------------------")
+        console.log("Actual Purchanes:",acutalpur)
+        console.log("Stock Update:",book.stock)
+        console.log("Total Price:Rp",totalpricepur)
 
-            //array kosong
-            let toc=[];
-
-            //var kosong untuk update harga total
-            let toccr=0;
-
-            //array untuk bulan
-
-            let months=["janurai","febuari","maret","april","mei","juni","juli","agustus","september","oktober","November","desember"]
-
-            for (let i=0; i < credit; i++){
-                toccr += creditprice;
-                toc.push({
-                    bulan:months[i],
-                    cicilan: Math.round(creditprice),
-                    total:Math.round(toccr)
-                });
-            };
-            console.log([...toc]);        
-        } else{
-            console.log("status buku ini tidak dijual")
-        }
-      
-    
+       }  
+    }
 }
+       
+       //tentukan cicilan
+async function creditbook(){
+            //array untuk bulan
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec"];
+            let currMonth = 9;
 
-        
+            console.log(`Rincian cicilan ${book.credit} bulan, dimulai dari bulan ${months[currMonth]}`);
+            
+            // harga cicilan/bulan berdasarkan harga buku terakhir
+            let creditPrice = book.price / book.credit;
+
+            // Array kosong untuk di push
+            let toc = [];
+
+            // var kosong untuk update harga total
+            let tocCr = 0;
+
+            // implement desctructuring dan spread
+            const [...a] = months;
+
+            // looping for pushing the 
+            for (let i = 0; i < book.credit; i++){
+                tocCr += creditPrice;
+
+                if(book.credit > 4){
+                    tocCr +=1000
+                }
+
+                if (currMonth > 11){
+                    currMonth = 0;
+                }
+
+                // array func, untuk push ke array object
+                toc.push( {
+                    bulan: a[currMonth],
+                    cicilan: Math.round(creditPrice),
+                    total: Math.round(tocCr)
+                } );
+
+                //
+                currMonth++;
+            };
+
+            // console.log([...toc]);
+            return toc
+     
+        }
+    
 
 
-bookpurchasing("oke", "saya","javascrip day 1 zettacamp", 20000, 0.1, 50, true,5,6,12);
-
-
+//memangil function
+// purchasebook(book);
+let arrayCredit= creditbook();
+console.log(arrayCredit)
+module.exports=creditbook
 

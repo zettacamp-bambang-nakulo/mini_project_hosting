@@ -1,16 +1,19 @@
+const { rejects } = require('assert')
 const express = require('express')
+const { resolve } = require('path')
 const app = express()
 const port= 8000
+const creditbook=require("./app")
 const book = {
     title: "onepice"
     ,author:"ODA"
     ,deskripsi:"I want to be the pirate king"
-    ,price: "Rp. 31000"
-    ,discon:"5%"
-    ,tax:"10%"
+    ,price: 31000
+    ,discon:5
+    ,tax:10
     ,sale: true
-    ,stock:"6"
-    ,jumlah:"6"
+    ,stock:6
+    ,jumlah:6
 
 }
 
@@ -57,7 +60,34 @@ app.get("/book",(req, res)=>{
     res.end()
 })
 
-app.use("*",(req,res)=>{
-    res.send("halaman tidak ditemukan")
+app.get("/tax",async (req,res)=>{
+    res.send(await creditbook())
 })
 
+
+// app.use("*",(req,res)=>{
+//     res.send("halaman tidak ditemukan")
+// })
+
+//javascript day 6
+function tax(){
+    return book.price * book.tax /100;
+}
+
+function  cobapromise(){
+    const waktu = 2000
+    return new Promise((resolve, rejects)=>{
+        setTimeout(()=>{
+            resolve("selesai")
+        }, waktu)
+    })
+   
+}
+
+async function cobaasync(){
+        const coba = await cobapromise();
+        // return coba
+        
+}
+
+// cobaasync();
