@@ -60,8 +60,8 @@ app.get("/book",(req, res)=>{
     res.end()
 })
 
-app.get("/tax",async (req,res)=>{
-    res.send(await creditbook())
+app.get("/credit",async (req,res)=>{
+    res.send( await creditbook())
 })
 
 
@@ -70,24 +70,21 @@ app.get("/tax",async (req,res)=>{
 // })
 
 //javascript day 6
-function tax(){
-    return book.price * book.tax /100;
-}
 
-function  cobapromise(){
-    const waktu = 2000
-    return new Promise((resolve, rejects)=>{
-        setTimeout(()=>{
-            resolve("selesai")
-        }, waktu)
-    })
+
+// function  cobapromise(){
+//     waktu=2000
+//     return new Promise(()=>{
+//         setTimeout(()=>{
+//             diaplay= creditbook();
+//             return diaplay
+//         }, waktu)
+//     })
    
-}
+// }
 
-async function cobaasync(){
-        const coba = await cobapromise();
-        // return coba
-        
-}
-
-// cobaasync();
+// async function cobaAsync(){
+//     const coba= await cobapromise();
+//     console.log(coba)
+// }
+// cobaAsync()

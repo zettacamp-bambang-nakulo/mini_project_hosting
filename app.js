@@ -81,7 +81,7 @@ function purchasebook(book){
 async function creditbook(){
             //array untuk bulan
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec"];
-            let currMonth = 9;
+            let currMonth = 0;
 
             console.log(`Rincian cicilan ${book.credit} bulan, dimulai dari bulan ${months[currMonth]}`);
             
@@ -101,11 +101,11 @@ async function creditbook(){
             for (let i = 0; i < book.credit; i++){
                 tocCr += creditPrice;
 
-                if(book.credit > 4){
-                    tocCr +=1000
+                if(currMonth > 4 ){
+                    creditPrice += 1000
                 }
 
-                if (currMonth > 11){
+                else if (currMonth > 11){
                     currMonth = 0;
                 }
 
