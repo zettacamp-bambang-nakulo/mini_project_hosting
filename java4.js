@@ -1,3 +1,4 @@
+//array objek
 const songs = [
     {
         title :"Interaksi",
@@ -98,6 +99,7 @@ function generateRandomPlaylist(data) {
         playlist: []
     };
     
+    //Able to do iteration on array of object
     while(true) {
         // random number
         const rnum = getRandomNumber(0, songs.length - 1);
@@ -107,6 +109,7 @@ function generateRandomPlaylist(data) {
         const [song] = songs.splice(rnum, 1);
         
         // buat ngecek lagunya udah masuk playlist apa belum
+        //Able to use condition statement
         if (!song) continue;
         
         // kalo setelah ditambah durasinya ternyata
@@ -128,12 +131,12 @@ function getRandomNumber(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
-
+//function dimasukan ke variable
 const genreSorted = sortByGenre(songs, "Pop");
 const artistSorted = sortByArtist(songs, "BTS");
 const randomPlaylist = generateRandomPlaylist(songs);
 
-
+//memangil function dalam console.log
 console.log("sorted genre:", genreSorted);
 console.log("sorted artist:", artistSorted);
 console.log("random playlist:", randomPlaylist);
