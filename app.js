@@ -133,4 +133,5 @@ async function creditbook(addprice=1000){
 let arrayCredit= creditbook();
 console.log(arrayCredit)
 module.exports=creditbook
+module.exports=book
 
