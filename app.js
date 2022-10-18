@@ -78,7 +78,7 @@ async function purchasebook(book){
 }
        
        //tentukan cicilan
-async function creditbook(){
+async function creditbook(addprice=1000){
             //array untuk bulan
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dec"];
             let currMonth = 0;
@@ -102,7 +102,7 @@ async function creditbook(){
                 tocCr += creditPrice;
 
                 if(currMonth > 4 ){
-                    creditPrice += 1000
+                    creditPrice += addprice
                 }
 
                 else if (currMonth > 11){
