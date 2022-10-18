@@ -101,6 +101,7 @@ async function creditbook(addprice=1000){
             for (let i = 0; i < book.credit; i++){
                 tocCr += creditPrice;
 
+                //additional price
                 if(currMonth > 4 ){
                     creditPrice += addprice
                 }
