@@ -1,4 +1,4 @@
-//array objek
+//array objek fungsinya adalah membuat array dalam objek
 const songs = [
     {
         title :"Interaksi",
