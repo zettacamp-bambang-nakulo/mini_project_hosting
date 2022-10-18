@@ -81,6 +81,7 @@ function  bookpurchasing(title, author,deskripsi, price, dicount, tax, sale, sto
                     total:Math.round(toccr)
                 });
             };
+            //spread
             console.log([...toc]);        
         } else{
             console.log("status buku ini tidak dijual")
