@@ -82,6 +82,7 @@ app.get("/credit",async (req,res)=>{
 //javascrip day 7 ,2 point with await and witout awit and promesai and even js 
 
 // read fs file salah satu dalam event, utf8 endcoding
+//fs adalah libery yang berguna untuk membaca file, menulis file, membuat file, mengetahui kapasitas dan juga bisa menghapusnya
 const fs =require("fs");
 function readdata(){ 
     fs.readFile("data.txt","utf8",(err, data)=>{
