@@ -77,3 +77,58 @@ app.get("/credit",async (req,res)=>{
 //     console.log(coba)
 // }
 // cobaAsync()
+
+
+//javascrip day 7 ,2 point with await and witout awit and promesai and even js 
+
+// read fs file salah satu dalam event, utf8 endcoding
+const fs =require("fs");
+function readdata(){ 
+    fs.readFile("data.txt","utf8",(err, data)=>{
+    console.log(data)
+
+})
+};
+
+//event adalah suatu tindakan dalam komputer  adalah event atau peristiwa untuk memangil fungsi
+const event= require("events");
+async function event1(){ 
+    const eventEmitter= new event.EventEmitter();
+    eventEmitter.on("openfile",readdata)
+    eventEmitter.emit("openfile")
+}
+
+//promise adalah mewakili penyelesaian akhir (atau kegagalan) dari operasi asinkron dan nilai yang dihasilkannya.
+const Mypromise= new Promise((resolve,rejects)=>{
+    resolve("hai")
+    rejects("end")
+})
+Mypromise
+    //then printah dari suatu proses keberhasilan 
+    .then(res =>console.log("program start"))
+    .catch(error => console.log("error"))
+
+
+// root for with awit dengan try catch promise
+app.get("/withawit",async(req, res)=>{
+    try{
+    await event1()
+    res.send("with await")
+
+
+    }catch(err){
+        err = new Error("File tidak kebaca");
+        res.setHeader('WWW-Authenticate', 'Basic');
+        err.status = 401;
+        res.send({
+        err : err.message
+    })
+    }
+
+});
+
+//root for no awit
+app.get("/noawit",(req,res)=>{
+    event1()
+    res.send("this no await")
+})
