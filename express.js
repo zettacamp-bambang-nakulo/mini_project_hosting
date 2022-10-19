@@ -93,10 +93,11 @@ function readdata(){
 
 //event adalah suatu tindakan dalam komputer  adalah event atau peristiwa untuk memangil fungsi
 const event= require("events");
+const { rsort } = require('semver')
 async function event1(){ 
     const eventEmitter= new event.EventEmitter();
     eventEmitter.on("openfile",readdata)
-    eventEmitter.emit("openfile")
+    eventEmitter.emit("openfile")//openfile adalah nama event
 }
 
 //promise adalah mewakili penyelesaian akhir (atau kegagalan) dari operasi asinkron dan nilai yang dihasilkannya.
@@ -106,7 +107,7 @@ const Mypromise= new Promise((resolve,rejects)=>{
 })
 Mypromise
     //then printah dari suatu proses keberhasilan 
-    .then(res =>console.log("program start"))
+    .then(() =>console.log("mengunggu data"))
     .catch(error => console.log("error"))
 
 
@@ -130,6 +131,14 @@ app.get("/withawit",async(req, res)=>{
 
 //root for no awit
 app.get("/noawit",(req,res)=>{
-    event1()
-    res.send("this no await")
+    Mypromise
+    .then(()=>{
+        event1()
+        res.send("this no await")
+    })
+    .catch((err)=>{
+        console.log(err)
+        res.end()
+    })
+    
 })
