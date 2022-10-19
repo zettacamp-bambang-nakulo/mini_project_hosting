@@ -78,9 +78,9 @@ app.get("/credit",async (req,res)=>{
 // }
 // cobaAsync()
 
-
-//javascrip day 7 ,2 point with await and witout awit and promesai and even js 
-
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>//
+            //javascrip day 7 ,2 point with await and witout awit and promesai and even js 
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<//
 // read fs file salah satu dalam event, utf8 endcoding
 //fs adalah libery yang berguna untuk membaca file, menulis file, membuat file, mengetahui kapasitas dan juga bisa menghapusnya
 const fs =require("fs");
@@ -141,4 +141,57 @@ app.get("/noawit",(req,res)=>{
         res.end()
     })
     
+})
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<//
+                                        // END TASK TO DAY//
+//....................................................................................................//
+
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>//
+                        //javacrip day 8 membuat endpoint baru buat set dan map
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<//
+
+// Map mirip seperti Object biasa, berfungsi untuk menyimpan collection dengan key,
+// bedanya, key pada map ini bisa berupa tipe data yang lebih beragam, seperti 
+// angka, string, boolean, object, atau bahkan NaN.
+
+//Bagaimana jika ingin iterasi entry Map? Ada tiga cara:
+//map.keys() untuk iterasi key
+//map.values() untuk iterasi value
+
+const Authormap= new Map();
+    //author 1 dan seterusnya itu KEY dalam map
+    //spread book dan seterusnya itu value
+    //buat memecah author yang ada dibook menjadi author1
+    Authormap.set("author1",{...book,author:"author1"})
+    Authormap.set("author2",{...book,author:"author2"})
+    Authormap.set("author3",{...book,author:"author3"})
+    
+let booksAuthor = new Set(["author1", "author2", "author3"])//inisiasi buat set
+ 
+
+//Set bisa dibilang mirip array, hanya saja tidak bisa duplikat elemen atau unik.
+//express.urlencoded({extended:true} buat nangkap reques . body dipostman
+//post berfungsi untuk Tambahkan informasi
+app.post("/setmap",express.urlencoded({extended:true}) ,(req,res)=>{
+    const {author} = req.body; // buat meminta request di dalam body pada postman
+    if(!author){
+        res.send("author kosong")
+    }
+    //has berfungsi untuk Mengembalikan nilai true jika ada nilai
+    //buat mengecek apakah ada duplikat buat penulisnnya di dalam authormap
+    //` backtick buat string literal
+    if(booksAuthor.has(author)){
+        res.send(`author ada yang duplikat: ${author}
+        ${Authormap.get(author).author} 
+        `)
+    }else{
+        Authormap.set(author,{...book,author})//untuk menambahkan map baru
+        booksAuthor.add(author); //buat nambah set untuk penulis
+        console.log(booksAuthor)//buat memangil set dengan variable bookAuthor
+        res.send(Authormap.get(author));//respon ke postman
+    }
+})
+
+app.get("/setmap1",(req,res)=>{
+    res.send([...Authormap])//dipanggil filenya dengan spread
 })
