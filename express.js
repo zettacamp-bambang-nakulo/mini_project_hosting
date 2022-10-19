@@ -170,6 +170,7 @@ let booksAuthor = new Set(["author1", "author2", "author3"])//inisiasi buat set
  
 
 //Set bisa dibilang mirip array, hanya saja tidak bisa duplikat elemen atau unik.
+// method set ada .add, .delete, .has, .clear, .values, .key
 //express.urlencoded({extended:true} buat nangkap reques . body dipostman
 //post berfungsi untuk Tambahkan informasi
 app.post("/setmap",express.urlencoded({extended:true}) ,(req,res)=>{
