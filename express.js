@@ -181,7 +181,7 @@ app.post("/setmap",express.urlencoded({extended:true}) ,(req,res)=>{
     //buat mengecek apakah ada duplikat buat penulisnnya di dalam authormap
     //` backtick buat string literal
     if(booksAuthor.has(author)){
-        res.send(`author ada yang duplikat: ${author}`)
+        res.send(`author sudah ditambahkan dalam list: ${author}`)
     }else{
         Authormap.set(author,{...book,author})//untuk menambahkan map baru
         booksAuthor.add(author); //buat nambah set untuk penulis
