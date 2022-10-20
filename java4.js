@@ -32,7 +32,7 @@ const songs = [
     },
     {
         title :"Pop!",
-        artist: "Naeyon",
+        artist: "Tiara Andini",
         genre :"Kpop",
         duration:10.51
     },
@@ -133,7 +133,7 @@ function getRandomNumber(min, max) {
 
 //function dimasukan ke variable
 const genreSorted = sortByGenre(songs, "Pop");
-const artistSorted = sortByArtist(songs, "BTS");
+const artistSorted = sortByArtist(songs, "Tiara Andini");
 const randomPlaylist = generateRandomPlaylist(songs);
 
 //memangil function dalam console.log
