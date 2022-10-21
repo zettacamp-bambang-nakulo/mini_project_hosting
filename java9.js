@@ -162,7 +162,7 @@ function sortByArtist(data, artist) {
 }
 
 function generateRandomPlaylist(data,min=60) {
-    const songArray = data
+    const songArray = [...data]
     // buat nampung output
     const output = {
         duration:0,
@@ -170,7 +170,7 @@ function generateRandomPlaylist(data,min=60) {
     };
     
     //Able to do iteration on array of object
-    while(songArray.length > 1) {
+    while(songArray.length > 0) {
         // random number
         const rnum = getRandomNumber(0, data.length  -1);
        
@@ -222,14 +222,17 @@ function getRandomNumber(min, max) {
 // JSON Web Token adalah token berbentuk string panjang yang random,
 // lalu token ini memungkinkan kita untuk mengirimkan data yang dapat diverifikasi oleh dua pihak atau lebih.
 
-
+//kasih untuk parameter
+//terima adalah kuci rahasia
+//jwt.sign buat ambil tokennya
 const jwt = require("jsonwebtoken");
 function generateAccessToken(kasih){
     return jwt.sign(kasih,"terima",{expiresIn:"1h"});
 }
 
 const menerima= generateAccessToken({})
-
+//untuk mengecek
+//split buat memisahkan tokenya
 function verifikasi(req,res,next){
     let token=req.headers.authorization;
     if(token===undefined){
