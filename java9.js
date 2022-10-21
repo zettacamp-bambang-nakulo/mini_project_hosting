@@ -238,7 +238,7 @@ function verifikasi(req,res,next){
     if(token===undefined){
         res.send("token tidak ada")
     }
-    token=token.split(" ")[1]
+    token=token.split(" ")[1]//mengambil array indek satu karena kita split
     jwt.verify(token,"terima",(err, decode) =>{
         if(err){
             res.send(err)
@@ -252,6 +252,8 @@ function verifikasi(req,res,next){
 app.get("/",(req,res)=>{
     res.send("welcome to list song today")
 });
+
+//express.urlencoded({extended:true}) buat reqiest body pada postman
 app.post("/genrelist",verifikasi,express.urlencoded({extended:true}),(req,res)=>{
     const genre=req.body.genre;
     res.send(sortByGenre(songs,genre))
