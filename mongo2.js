@@ -64,6 +64,7 @@ app.get("/data",(req,res)=>{
 app.get("/find",express.urlencoded({extended:true}),async(req,res)=>{
     try {
         const { title } = req.body;
+        //jika titlenya kosong masuk findAll, jika sebaliknya masuknya kefindby title
             if(title== null || title==undefined){
                 const findAll= await Books.find()
                 res.send(findAll)
