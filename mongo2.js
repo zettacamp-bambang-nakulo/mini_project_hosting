@@ -126,3 +126,98 @@ app.delete("/delete1",express.urlencoded({extended:true}), async (req, res) => {
     }
   });
 
+
+  //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>//
+         //mongodb day 3 bikin list dengan memasukan id dari book kemarin dan menggunkan CRUD
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<//
+
+const bookShelfS = mongoose.Schema({
+  title: String,
+  book_ids: [{
+    type: mongoose.Schema.Types.ObjectId
+  }]
+},{timestamps:true});
+
+const bookShelfModel= mongoose.model("bookShelf", bookShelfS);
+
+app.post("/create2",express.urlencoded({extended:true}), async (req, res)=>{
+  try{
+    let {title,book_ids}= req.body;
+    const saveData = await new bookShelfModel({
+    title: title,
+    book_ids: book_ids.split(" ")
+    })
+    res.send(await saveData.save())
+  }catch(err){
+    res.send({ message: err.message || "Internal Server Error" });
+  }
+})
+//operator adalah membandingkan nilai dengan yang ditentutkan agar hasinya sesuai dengan yang ditentutkan
+//filter untuk memilah data sesuai dengan agumen yang ditentukan
+// mencari data _id dari isi book_ids
+//$eq( equal) operator mencocokkan dokumen di mana nilai bidang sama dengan nilai yang ditentukan.
+//$gt (greater than) Mencocokkan nilai yang lebih besar dari nilai yang ditentukan.
+// $gte(greater than or equal )
+// Mencocokkan nilai yang lebih besar atau sama dengan nilai yang ditentukan.
+// $in( in an array)
+// Cocok dengan salah satu nilai yang ditentukan dalam larik.
+// $lt( less than)
+// Mencocokkan nilai yang kurang dari nilai yang ditentukan.
+// $lte( less than or equal)
+// Mencocokkan nilai yang kurang dari atau sama dengan nilai yang ditentukan.
+// $ne(not equal)
+// Mencocokkan semua nilai yang tidak sama dengan nilai yang ditentukan.
+// $nin(none of the values specified in an array)
+// Tidak ada yang cocok dengan nilai yang ditentukan.
+//$elemMatch mencocokkan lebih dari satu komponen dalam elemen array.
+
+app.get("/find2",express.urlencoded({extended:true}),async(req,res)=>{
+  try {
+      const { _id } = req.body;
+      let ids=[]
+      
+      //jika titlenya kosong masuk findAll, jika sebaliknya masuknya kefindby title
+          if(_id==null){
+              res.send("Masukan ID")
+          }else{
+              ids = _id.split(" ")
+              const findData1= await bookShelfModel.find({
+                book_ids:{ 
+                $all: ids
+              
+              }
+        
+              })
+              res.send(findData1)
+          }
+          
+      } catch (err) {
+        res.send({ message: err.message || "Internal Server Error" });
+      }
+    });
+//buat update data dari bookshelf dimana dapat menambah isi dari book_ids atau dapat juga menguranginya
+app.patch("/update2",express.urlencoded({extended:true}), async (req, res) => {
+    try {
+    const { id } = req.body;
+    const {title, book_ids  } = req.body;
+    const updateBookS= await  bookShelfModel.findByIdAndUpdate(id, {
+            title: title,
+            book_ids : book_ids.split(" ")
+    },{ new :true
+    })
+      res.send(updateBookS)
+    } catch (err) {
+      res.send({ message: err.message || "Internal Server Error" });
+    }
+  });
+  
+  
+  app.delete("/delete2",express.urlencoded({extended:true}), async (req, res) => {
+    try {
+    const { id } = req.body;
+    const deleteData= await bookShelfModel.findByIdAndDelete(id)
+      res.send("delete berhasil")
+    } catch (err) {
+      res.send({ message: err.message || "Internal Server Error" });
+    }
+  });
