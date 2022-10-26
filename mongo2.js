@@ -85,7 +85,7 @@ app.get("/find",express.urlencoded({extended:true}),async(req,res)=>{
 
 
 // untuk membuat atau creat data pada database mongodb
-app.post("/create",express.urlencoded({extended:true}),async(req,res)=>{
+app.post("/books",express.urlencoded({extended:true}),async(req,res)=>{
    let {title, author,date_publiched,price}= req.body;
    const save = await new Books({
     title: title,
@@ -98,7 +98,7 @@ app.post("/create",express.urlencoded({extended:true}),async(req,res)=>{
 })
 
 //untuk melakukan updateing pada data di data base
-app.put("/update",express.urlencoded({extended:true}), async (req, res) => {
+app.put("/booksup/:id",express.urlencoded({extended:true}), async (req, res) => {
     try {
     const { id } = req.body;
     const { title, author, date_publiched, price } = req.body;
@@ -116,7 +116,7 @@ app.put("/update",express.urlencoded({extended:true}), async (req, res) => {
     }
   });
   
-app.delete("/delete1",express.urlencoded({extended:true}), async (req, res) => {
+app.delete("/booksdel/:id",express.urlencoded({extended:true}), async (req, res) => {
     try {
     const { id } = req.body;
     const deleteData= await Books.findByIdAndDelete(id)
@@ -140,7 +140,7 @@ const bookShelfS = mongoose.Schema({
 
 const bookShelfModel= mongoose.model("bookShelf", bookShelfS);
 
-app.post("/create2",express.urlencoded({extended:true}), async (req, res)=>{
+app.post("/bookshelf/:id",express.urlencoded({extended:true}), async (req, res)=>{
   try{
     let {title,book_ids}= req.body;
     const saveData = await new bookShelfModel({
@@ -171,7 +171,7 @@ app.post("/create2",express.urlencoded({extended:true}), async (req, res)=>{
 // Tidak ada yang cocok dengan nilai yang ditentukan.
 //$elemMatch mencocokkan lebih dari satu komponen dalam elemen array.
 
-app.get("/find2",express.urlencoded({extended:true}),async(req,res)=>{
+app.get("/bookshelfby/:id",express.urlencoded({extended:true}),async(req,res)=>{
   try {
       const { _id } = req.body;
       let ids=[]
@@ -196,7 +196,7 @@ app.get("/find2",express.urlencoded({extended:true}),async(req,res)=>{
       }
     });
 //buat update data dari bookshelf dimana dapat menambah isi dari book_ids atau dapat juga menguranginya
-app.patch("/update2",express.urlencoded({extended:true}), async (req, res) => {
+app.patch("/bookshelf/:id",express.urlencoded({extended:true}), async (req, res) => {
     try {
     const { id } = req.body;
     const {title, book_ids  } = req.body;
@@ -212,7 +212,7 @@ app.patch("/update2",express.urlencoded({extended:true}), async (req, res) => {
   });
   
   
-  app.delete("/delete2",express.urlencoded({extended:true}), async (req, res) => {
+  app.delete("/bookshelf",express.urlencoded({extended:true}), async (req, res) => {
     try {
     const { id } = req.body;
     const deleteData= await bookShelfModel.findByIdAndDelete(id)
