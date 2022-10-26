@@ -216,7 +216,7 @@ app.patch("/bookshelf/:id",express.urlencoded({extended:true}), async (req, res)
     try {
     const { id } = req.body;
     const deleteData= await bookShelfModel.findByIdAndDelete(id)
-      res.send("delete berhasil")
+      res.send(deleteData)
     } catch (err) {
       res.send({ message: err.message || "Internal Server Error" });
     }
