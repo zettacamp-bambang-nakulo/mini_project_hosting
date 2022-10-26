@@ -177,8 +177,9 @@ app.get("/bookshelfby/:id",express.urlencoded({extended:true}),async(req,res)=>{
       let ids=[]
       
       //jika titlenya kosong masuk findAll, jika sebaliknya masuknya kefindby title
-          if(_id==null){
-              res.send("Masukan ID")
+      //! adalah note
+          if(!_id){
+              res.send(await bookShelfModel.find({}))
           }else{
               ids = _id.split(" ")
               const findData1= await bookShelfModel.find({
