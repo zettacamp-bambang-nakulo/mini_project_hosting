@@ -134,7 +134,26 @@ app.delete("/booksdel/:id",express.urlencoded({extended:true}), async (req, res)
 const bookShelfS = mongoose.Schema({
   title: String,
   book_ids: [{
-    type: mongoose.Schema.Types.ObjectId
+    _id:false,
+    list_id:{
+      type: mongoose.Schema.Types.ObjectId
+    },
+    added:{
+      type: Date,
+      default: new Date
+    },
+    stock:{ 
+      type:Number
+    }
+  }],
+  date:[{
+    date:{
+      type: Date
+    },
+    time:{
+      type: String
+    }
+
   }]
 },{timestamps:true});
 
@@ -142,12 +161,32 @@ const bookShelfModel= mongoose.model("bookShelf", bookShelfS);
 
 app.post("/bookshelf/:id",express.urlencoded({extended:true}), async (req, res)=>{
   try{
-    let {title,book_ids}= req.body;
-    const saveData = await new bookShelfModel({
-    title: title,
-    book_ids: book_ids.split(" ")
+    let {title,book_ids,added,stock,date, time}= req.body;
+    let book_idArr= book_ids.split(" ")
+    let stockArr = stock.split(' ').map((el) => {return parseInt(el)});
+    let BookArr=[]
+    
+    book_idArr.forEach((book,index)=>{
+      BookArr.push({
+        list_id: mongoose.Types.ObjectId(book),
+        stock:stockArr[index],
+        added: new Date(added)
+      })
     })
-    res.send(await saveData.save())
+    // book_ids=BookArr;
+    const DataShelf = new bookShelfModel({
+      title,
+      book_ids:BookArr,
+  
+      date:[{
+        date:new Date,
+        time: time
+      }],
+      
+    })
+    // console.log(added)
+    await DataShelf.save()
+    res.send(DataShelf)
   }catch(err){
     res.send({ message: err.message || "Internal Server Error" });
   }
@@ -196,8 +235,32 @@ app.get("/bookshelfby/:id",express.urlencoded({extended:true}),async(req,res)=>{
         res.send({ message: err.message || "Internal Server Error" });
       }
     });
+
+app.get("/bookshelfbys/:id",express.urlencoded({extended:true}),async(req,res)=>{
+      try {
+          const { _id } = req.body
+          //jika titlenya kosong masuk findAll, jika sebaliknya masuknya kefindby title
+          //! adalah note
+              if(!_id){
+                  res.send(await bookShelfModel.find({}))
+              }else{
+                  const findData1= await bookShelfModel.find({
+                    $elemMatch:{ 
+                    $eq: book_ids(_id)
+                  
+                  }
+            
+                  })
+                  res.send(findData1)
+              }
+              
+          } catch (err) {
+            res.send({ message: err.message || "Internal Server Error" });
+          }
+        });
+
 //buat update data dari bookshelf dimana dapat menambah isi dari book_ids atau dapat juga menguranginya
-app.patch("/bookshelf/:id",express.urlencoded({extended:true}), async (req, res) => {
+app.patch("/bookshelfup/:id",express.urlencoded({extended:true}), async (req, res) => {
     try {
     const { id } = req.body;
     const {title, book_ids  } = req.body;
@@ -213,7 +276,7 @@ app.patch("/bookshelf/:id",express.urlencoded({extended:true}), async (req, res)
   });
   
   
-  app.delete("/bookshelf",express.urlencoded({extended:true}), async (req, res) => {
+  app.delete("/bookshelfdel/:id",express.urlencoded({extended:true}), async (req, res) => {
     try {
     const { id } = req.body;
     const deleteData= await bookShelfModel.findByIdAndDelete(id)
