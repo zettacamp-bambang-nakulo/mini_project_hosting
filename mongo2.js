@@ -161,11 +161,16 @@ const bookShelfModel= mongoose.model("bookShelf", bookShelfS);
 
 app.post("/bookshelf/:id",express.urlencoded({extended:true}), async (req, res)=>{
   try{
-    let {title,book_ids,added,stock,date, time}= req.body;
-    let book_idArr= book_ids.split(" ")
-    let stockArr = stock.split(' ').map((el) => {return parseInt(el)});
-    let BookArr=[]
+    let {title,book_ids,added,stock, time}= req.body;
+    let book_idArr= book_ids.split(" ") //buat mengasih spasi pada book_ids di posmant biar bisa input id banyak
+    let stockArr = stock.split(" ").map((el) => {return parseInt(el)});//map array brfungsi untuk mengubah ulang data split menjadi init atau angka
+    let BookArr=[] //buat menampung array objek
     
+
+    //foreach adalah perulangan khusu untuk membaca nilai array
+    //push untuk memasukan data
+    //book dan index parameter yang udah ada pada forEach
+    //mongoose.Types.ObjectId untuk mendefisinikan objek id
     book_idArr.forEach((book,index)=>{
       BookArr.push({
         list_id: mongoose.Types.ObjectId(book),
@@ -245,8 +250,10 @@ app.get("/bookshelfbys/:id",express.urlencoded({extended:true}),async(req,res)=>
                   res.send(await bookShelfModel.find({}))
               }else{
                   const findData1= await bookShelfModel.find({
-                    $elemMatch:{ 
-                    $eq: book_ids(_id)
+                    book_ids:{ 
+                    $elemMatch: {
+                        list_id: {$eq:mongoose.Types.ObjectId(_id)}
+                    }
                   
                   }
             
@@ -274,6 +281,56 @@ app.patch("/bookshelfup/:id",express.urlencoded({extended:true}), async (req, re
       res.send({ message: err.message || "Internal Server Error" });
     }
   });
+
+//buat mengubah date luar 
+  app.put("/bookshelf-date/:id",express.urlencoded({extended:true}), async (req, res) =>{
+    let {id, date, new_date}= req.body;
+    let check=null; //buat mengecek apakah data null atau kosong
+    if(id){
+      check = await bookShelfModel.updateOne({"_id":mongoose.Types.ObjectId(id)
+    },{
+      $set:{
+        "date.$[dt].date":new Date(new_date)//untuk menargetkan dokumen atau filter sesuai dengan shecma
+        //untuk mengfilter berdasarkan array tertentu
+        //dt untuk menyimpan indek sesuai dengan parameter yang dikasih
+      }
+    },{
+      arrayFilters:[{
+        "dt.date":{
+          $lte: Date(date)}
+      }]
+    })
+    } else{
+      res.send("id tidak ada")
+    }
+    res.send(check)
+    console.log(check)
+  })
+//root buat mengubah data added yang ada dalam book_ids didalam list_id
+// $filter
+// Memilih subset array untuk dikembalikan berdasarkan kondisi yang ditentukan. 
+// Mengembalikan array dengan hanya elemen-elemen yang cocok dengan kondisi. 
+// Elemen yang dikembalikan dalam urutan aslinya
+app.put("/bookshelf-added/:id",express.urlencoded({extended:true}), async (req, res) =>{
+    let {id, added, new_date}= req.body;
+    let check=null;
+    if(id){
+      check = await bookShelfModel.updateMany({"_id":mongoose.Types.ObjectId(id)
+    },{
+      $set:{
+        "book_ids.$[dd].added":new Date(new_date)
+      }
+    },{
+      arrayFilters:[{
+        "dd.added":{
+          $lte: Date(added)}
+      }]
+    })
+    } else{
+      res.send("id tidak ada")
+    }
+    res.send(check)
+  })
   
   
   app.delete("/bookshelfdel/:id",express.urlencoded({extended:true}), async (req, res) => {
