@@ -38,6 +38,7 @@ const bookSchema = mongoose.Schema({
     author: String,
     date_publiched: Number,
     price: Number,
+    stock: Number,
     tanggal_dibuat: Date,
     tanggal_update: Date
 },{timestamps:true})
@@ -101,12 +102,13 @@ app.post("/books",express.urlencoded({extended:true}),async(req,res)=>{
 app.put("/booksup/:id",express.urlencoded({extended:true}), async (req, res) => {
     try {
     const { id } = req.body;
-    const { title, author, date_publiched, price } = req.body;
+    const { title, author, date_publiched, price,stock } = req.body;
     const updateData= await Books.findByIdAndUpdate(id, {
             title: title,
             author: author,
             date_publiched: date_publiched,
             price: price,
+            stock: stock
     }, {
         new:true
     })
@@ -342,3 +344,94 @@ app.put("/bookshelf-added/:id",express.urlencoded({extended:true}), async (req, 
       res.send({ message: err.message || "Internal Server Error" });
     }
   });
+
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<//
+              // mongodb day 5 membuat anggregate menggunakan addFields, project, dan unwind//
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>//
+// Operasi Agregasi
+// Operasi agregasi memproses banyak dokumen dan mengembalikan hasil yang dihitung.
+// dapat menggunakan operasi agregasi untuk:
+
+// Kelompokkan nilai dari beberapa dokumen bersama-sama.
+
+// melakukan operasi pada data yang dikelompokkan untuk mengembalikan satu hasil.
+
+// Menganalisis perubahan data dari waktu ke waktu.
+
+// Untuk melakukan operasi agregasi, Anda dapat menggunakan:
+
+// Pipa agregasi
+// , yang merupakan metode pilihan untuk melakukan agregasi.
+
+// Metode agregasi tujuan tunggal
+// , yang sederhana tetapi tidak memiliki kemampuan pipa agregasi.
+// addFields menambahkan field baru yang belum pernah ada dalam dokumen
+//$multiply berfungsi untuk melakukan perhitungan perkalian  
+app.get("/bookaddfiled",async(req,res)=>{
+  try {
+    const AddF= await Books.aggregate([
+      {
+        $addFields:{
+          total_price:{
+            $multiply:[{$toInt:"$stock"},"$price"] //perintah untuk mengubah string menjadi intejer dalam fields total_price
+          }
+        }
+      }
+    ])
+    res.send(AddF)
+      
+    } catch (err) {
+      res.send({ message: err.message || "Internal Server Error" });
+    }
+});
+
+//buat melakukan match sesuai dengan data yang kita masukan dalam req body
+// project buat menampilkan data sesui dengan apa yang kita inginkan atau kondisikan
+// angka satu sama dengan true
+app.get("/booksProject",express.urlencoded({extended:true}),async(req,res)=>{
+  try {
+    const {title}= req.body
+    if(title){
+      const bookMa= await Books.aggregate([
+        {
+          $match:{
+            title:title
+          }
+        }
+      
+      ])
+      res.send(bookMa)
+    } else{
+      const bookPt= await Books.aggregate([
+        {
+          $project:{
+            title:1, date_publiched:1
+          }
+        }
+      ])
+      res.send(bookPt)
+    } 
+    } catch (err) {
+      res.send({ message: err.message || "Internal Server Error" });
+    }
+})
+
+app.get("/bookshelfunwind",async(req,res)=>{
+  try{
+    const bookunW= await bookShelfModel.aggregate([
+      {
+        $unwind: "$book_ids"
+      },
+      {
+        $project:{
+          title:1, book_ids:1
+        }
+      }
+    ])
+    res.send(bookunW)
+    console.log(bookunW)
+  }catch(err) {
+    res.send({ message: err.message || "Internal Server Error" });
+  }
+})
+
