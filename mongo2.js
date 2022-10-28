@@ -367,17 +367,39 @@ app.put("/bookshelf-added/:id",express.urlencoded({extended:true}), async (req, 
 // , yang sederhana tetapi tidak memiliki kemampuan pipa agregasi.
 // addFields menambahkan field baru yang belum pernah ada dalam dokumen
 //$multiply berfungsi untuk melakukan perhitungan perkalian  
-app.get("/bookaddfiled",async(req,res)=>{
+app.get("/bookaddfiled",express.urlencoded({extended:true}),async(req,res)=>{
   try {
-    const AddF= await Books.aggregate([
+    //distukturing buat memecah strukturnya
+    const {title}= req.body
+    // let {buy}= req.body
+    // buy= parseInt(buy)
+    console.log(title)
+    let AddF= await Books.aggregate([
+      {
+        $match:{
+          title:title
+        }
+       },
       {
         $addFields:{
           total_price:{
             $multiply:[{$toInt:"$stock"},"$price"] //perintah untuk mengubah string menjadi intejer dalam fields total_price
+            // $multiply:["$stock",buy] 
           }
         }
       }
     ])
+    if(AddF==""){
+      AddF= await Books.aggregate([
+        {
+          $addFields:{
+            total_price:{
+              $multiply:[{$toInt:"$stock"},"$price"] //perintah untuk mengubah string menjadi intejer dalam fields total_price
+            }
+          }
+        }
+      ])
+    }
     res.send(AddF)
       
     } catch (err) {
@@ -388,6 +410,7 @@ app.get("/bookaddfiled",async(req,res)=>{
 //buat melakukan match sesuai dengan data yang kita masukan dalam req body
 // project buat menampilkan data sesui dengan apa yang kita inginkan atau kondisikan
 // angka satu sama dengan true
+// $match Filter dokumen untuk hanya meneruskan dokumen yang cocok dengan kondisi yang ditentuka
 app.get("/booksProject",express.urlencoded({extended:true}),async(req,res)=>{
   try {
     const {title}= req.body
@@ -415,7 +438,8 @@ app.get("/booksProject",express.urlencoded({extended:true}),async(req,res)=>{
       res.send({ message: err.message || "Internal Server Error" });
     }
 })
-
+//unwind adalah Mendekonstruksi bidang array dari dokumen input untuk menghasilkan dokumen untuk setiap elemen.
+//atau untuk memecah fileds yang ada dalam array
 app.get("/bookshelfunwind",async(req,res)=>{
   try{
     const bookunW= await bookShelfModel.aggregate([
@@ -435,3 +459,65 @@ app.get("/bookshelfunwind",async(req,res)=>{
   }
 })
 
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>//
+    // mongodb day5 menambahkan match,sort, concat di collection books dan bikin looup di bookshelf //
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<//
+// sort adalah mengurutkan atau menyotir field berdasarkan ascending atau descending
+// angka 1 (Sort ascending) buat mengurutkan data dari atas ke bawah
+// angka -1 (Sort descending) buat mengurutkan data field dari bawah ke atas
+//concat adalah Menggabungkan string dan mengembalikan string yang digabungkan
+app.get("/bookSortConcat", async(req,res)=>{
+  try{
+    const bookSrt= await Books.aggregate([
+      {
+        $sort:{
+          title: 1
+      }
+      },
+      {
+        $project:{
+          title_price:{
+            $concat:["$title"," : ",{$toString:"$price"}]
+        }
+        }
+
+      }
+    ])
+    res.send(bookSrt)
+
+  }catch(err){
+    res.send({ message: err.message || "Internal Server Error" });
+  }
+})
+
+//jadi $lookup itu akan menghubungkan ke collection yang berbeda untuk di tampilkan di field baru
+//from untuk mengambil fields dari collection books
+//localField berguna untuk mengambil field local yang mau diambil contohnya book_ids.list_id yang ada pada bookshelf
+//foreignField key yang berguna untuk mecocokan field yang sama dengan book atau yang ada pada bookshelf
+// as itu untuk menampung lookup yang dimana as menjadi field baru yang ada pada collection bookshelf yang berisi data
+// berdasarkan id yang sama 
+app.get("/bookShelflookup", async(req,res)=>{
+  try{
+    const bookSlookup= await bookShelfModel.aggregate([
+      {
+        $lookup:
+       {
+         from: "books",
+         localField: "book_ids.list_id",
+         foreignField: "_id",
+         as: "book_populate"
+       }
+      },
+      {
+        $project:{
+          "book_populate.createdAt":0,
+          "book_populate.updatedAt":0,
+          "book_populate.__v":0
+      }
+      }
+    ])
+    res.send(bookSlookup)
+  }catch(err){
+    res.send({ message: err.message || "Internal Server Error" });
+  }
+})
