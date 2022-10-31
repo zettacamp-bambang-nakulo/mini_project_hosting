@@ -361,7 +361,7 @@ app.put("/bookshelf-added/:id",express.urlencoded({extended:true}), async (req, 
 // Untuk melakukan operasi agregasi, Anda dapat menggunakan:
 
 // Pipa agregasi
-// , yang merupakan metode pilihan untuk melakukan agregasi.
+// , yang merupakan metode pilihan untuk melakukan agregasi. urutanya dari atas ke bawah
 
 // Metode agregasi tujuan tunggal
 // , yang sederhana tetapi tidak memiliki kemampuan pipa agregasi.
@@ -409,7 +409,7 @@ app.get("/bookaddfiled",express.urlencoded({extended:true}),async(req,res)=>{
 //buat melakukan match sesuai dengan data yang kita masukan dalam req body
 // project buat menampilkan data sesui dengan apa yang kita inginkan atau kondisikan
 // angka satu sama dengan true
-// $match Filter dokumen untuk hanya meneruskan dokumen yang cocok dengan kondisi yang ditentuka
+// $match Filter dokumen untuk hanya meneruskan dokumen yang cocok dengan kondisi yang ditentuka  ke tahap pipeline berikutnya
 app.get("/booksProject",express.urlencoded({extended:true}),async(req,res)=>{
   try {
     const {title}= req.body
@@ -427,7 +427,7 @@ app.get("/booksProject",express.urlencoded({extended:true}),async(req,res)=>{
       const bookPt= await Books.aggregate([
         {
           $project:{
-            title:1, date_publiched:1
+            title:1
           }
         }
       ])
@@ -464,12 +464,13 @@ app.get("/bookshelfunwind",async(req,res)=>{
 // angka 1 (Sort ascending) buat mengurutkan data dari atas ke bawah
 // angka -1 (Sort descending) buat mengurutkan data field dari bawah ke atas
 //concat adalah Menggabungkan string dan mengembalikan string yang digabungkan
-app.get("/bookSortConcat", async(req,res)=>{
+app.get("/bookSortConcat",express.urlencoded({extended:true}), async(req,res)=>{
   try{
+    let {sort = 1} =req.body //set default
     const bookSrt= await Books.aggregate([
       {
         $sort:{
-          title: 1
+          title: parseInt(sort) //dibuat dinamis
       }
       },
       {
@@ -519,3 +520,6 @@ app.get("/bookShelflookup", async(req,res)=>{
     res.send({ message: err.message || "Internal Server Error" });
   }
 })
+//agregasi manupulasi data yang data komplek yang melibatkan collection lain
+//jika menggunakan agregasi cukup dengan satu kali saja
+//contoh penerapan endpont dengan mengget data dengan filter, dll cukup dengan satu kali saja
