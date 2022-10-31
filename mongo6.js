@@ -523,3 +523,66 @@ app.get("/bookShelflookup", async(req,res)=>{
 //agregasi manupulasi data yang data komplek yang melibatkan collection lain
 //jika menggunakan agregasi cukup dengan satu kali saja
 //contoh penerapan endpont dengan mengget data dengan filter, dll cukup dengan satu kali saja
+
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>//
+// mongodb day 7 //
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<//
+//limit Membatasi jumlah dokumen yang lolos ke tahap berikutnya dalam pipeline.
+//skip Melewati jumlah dokumen yang ditentukan yang lolos ke tahap 
+//dan meneruskan dokumen yang tersisa ke tahap berikutnya dalam pipa
+//group memisahkan dokumen ke dalam grup sesuai dengan "kunci grup".
+// Outputnya adalah satu dokumen untuk setiap kunci grup yang unik.
+//_id wajib untuk key pertama dan tidak bisa diubah akan isi dari _id dapat diubah berdasarkan key yang unik dalam books
+//contonya seperti dibawah ini:
+app.get("/bookPage",express.urlencoded({extended:true}), async(req,res)=>{
+  try{
+    let {page, limit} =req.body //set default
+    page= parseInt(page)-1 //untuk mulai dari angka 0(nol)
+    limit= parseInt(limit)
+    // const limitpage =3
+    if (page < 0){
+      page=0 
+    }
+    const bookPge= await Books.aggregate([
+      {
+        $skip: page*limit
+      },
+      {
+        $limit:limit
+      },
+      {
+        $group:{
+           _id:"$author"
+        }
+      }
+    ])
+    // .skip(page * limitpage)
+    // .limit(limitpage)
+    res.send({page: `${page+1} / ${Math.ceil(await Books.count()/limit)}`,bookPge})
+
+  }catch(err){
+    res.send({ message: err.message || "Internal Server Error" });
+  }
+})
+//idelanya skip dan limit itu opsional dimana kalau gak dipakai semua nya muncul
+//facet untuk Memproses beberapa saluran agregasi dalam satu tahap pada kumpulan dokumen input yang sama.
+//Setiap sub-pipa memiliki bidangnya sendiri dalam dokumen keluaran di mana hasilnya disimpan sebagai array dokumen.
+//facet itu bisa dipakai meenggunakan skip, limit, dan group
+app.get("/bookfacet",async(req,res)=>{
+  try{
+    const bookFct= await Books.aggregate([
+      {
+        $facet:{
+          sort_books:[
+            {
+              $sortByCount:"$price"
+            }
+            ]
+        }
+      }
+    ])
+    res.send(bookFct)
+  }catch(err){
+  res.send({ message: err.message || "Internal Server Error" });
+  }
+})
