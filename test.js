@@ -9,6 +9,9 @@
 const { ApolloServer, gql}= require("apollo-server");
 const mongoose= require("mongoose")
 const resolvers= require("./resolvers")
+const bookloders= require('./bookshelf_loader')
+const applyMiddleware=require("graphql-middleware")
+
 
 
 mongoose.connect("mongodb://localhost/book")
@@ -34,10 +37,28 @@ type Book{
     price_tax:Int
 
 }
+
+type BookShelf_bookids{
+    list_id: Book
+    added:String,
+    stock:Int
+}
+
+type login{
+  status:String
+}
+
+type BookShelf{
+    title: String,
+    book_ids:[BookShelf_bookids]
+
+}
 type Query{
     getBooksall(page:Int,limit:Int):[Book]
     getBooksByid(id:ID):Book
-    
+    getBookShelfs:[BookShelf]
+    login(username:String,password:String, secret:String):login
+    auth(token:String):login
 }
 type Mutation{
     createbook( title: String,
@@ -62,10 +83,18 @@ type Mutation{
 //Resolver adalah kumpulan function yang akan memberi response untuk setiap query GraphQL.
 // Response ini dapat berasal dari database atau sebuah string.
 
+
+
 const apolloServer= new ApolloServer({
     typeDefs,
-    resolvers
+    resolvers,
+    context: function({}){
+        return{
+            bookloders
+        }
+    }
 });
+
 
 apolloServer.listen(4000)
 console.log("Running a GraphQL API server at http://localhost:4000/graphql")
