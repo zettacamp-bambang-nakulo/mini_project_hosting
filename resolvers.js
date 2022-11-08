@@ -7,7 +7,8 @@ const jwt= require("jsonwebtoken");
 //untuk create
 
 //untuk Read data
-async function getAllUser(parent,{email,first_name,last_name}){
+//belum jadi paginationnya
+async function getAllUser(parent,{email,first_name,last_name, page, limit}){
    let query ={$and:[]};
    let queryAgg= [];
 
@@ -38,11 +39,32 @@ async function getAllUser(parent,{email,first_name,last_name}){
         },
     )
    }else{
-   let dataUser = await userModel.find()
+    const count = await userModel.count()
+    let dataUser = await userModel.aggregate([
+        {
+            $skip : (page-1)*limit
+        },
+        {
+            $limit:limit
+        }
+   ])
+   dataUser.map((el)=>{
+    el.id = mongoose.Types.ObjectId(el._id)
+        return el
+   })
+   dataUser = {
+    data: dataUser,
+    count:count,
+    page: page,
+    max_page:  Math.ceil( count / limit),
+    
+    };
+    console.log(dataUser)
    return dataUser
    }
 
    let dataUser = await userModel.aggregate(queryAgg)
+   console.log(dataUser)
    return dataUser
 }
 
@@ -99,7 +121,7 @@ async function DeleteUser(parent,{id,email,first_name,last_name,password,status}
         last_name:last_name,
         password:password,
         status:status
-    },{new:true, runValidators:true})
+    },{new:true})
     return delUser
 }
 
@@ -131,16 +153,57 @@ async function CreateIngredints(parent,{name,stock}){
     return addIngredint
 }
 
+async function getAllIngredients(parent,{name,stock}){
+    if(stock >0){
+        const getData= await ingModel.find({
+            stock:stock
+        })
+        return getData
+    }else{
+        throw new ApolloError(" stock tidak ada")
+    }
+}
+
+async function getOneIngredients(parent,{id}){
+    if(id){
+        const getone= await ingModel.findById(id)
+        return getone
+    }else{
+        return new ApolloError(" id harus dimasukan")
+    }
+}
+
+async function UpdateIngredients(parent,{id, stock}){
+    let changeIng = await ingModel.findByIdAndUpdate(id,{
+        stock:stock
+
+    })
+    return changeIng
+}
+
+async function DeleteIngredients(parent,{id,name,stock,status}){
+    const delIng = await ingModel.findByIdAndUpdate(id,{
+        name:name,
+        stock:stock,
+        status:status
+    },{new:true})
+    return delIng
+}
+
 module.exports={
     Query:{
         getAllUser,
         getOneUser,
-        login
+        login,
+        getAllIngredients,
+        getOneIngredients
     },
     Mutation:{
         CreateUser,
         UpdateUser,
         DeleteUser,
-        CreateIngredints
+        CreateIngredints,
+        UpdateIngredients,
+        DeleteIngredients
     }
 }
