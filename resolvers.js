@@ -1,7 +1,13 @@
+//import monggose dari libery
 const mongoose = require('mongoose');
+
+//import user model
 const userModel= require("./userModel")
-const ingModel= require("./ingredients/ingredientsModel")
+
+//import apollo error
 const { ApolloError } = require('apollo-server-errors')
+
+//import jwt
 const jwt= require("jsonwebtoken");
 
 //untuk create
@@ -59,12 +65,26 @@ async function getAllUser(parent,{email,first_name,last_name, page, limit}){
     max_page:  Math.ceil( count / limit),
     
     };
-    console.log(dataUser)
    return dataUser
    }
 
-   let dataUser = await userModel.aggregate(queryAgg)
-   console.log(dataUser)
+   let dataUser = await userModel.aggregate(queryAgg,[
+    {
+        $skip : (page-1)*limit
+    },
+    {
+        $limit:limit
+    }
+    
+   ])
+   dataUser.map((el)=>{
+    el.id = mongoose.Types.ObjectId(el._id)
+        return el
+   })
+   dataUser = {
+    data: dataUser
+    
+    };
    return dataUser
 }
 
@@ -73,6 +93,7 @@ async function getAllUser(parent,{email,first_name,last_name, page, limit}){
    //unshift buat naruh match diatas
 
 
+//untuk memanggil user berdasarkan id dan email
 async function getOneUser(parent,{id, email}){
     // if(!id && !email){
     //     const user= await userModel.find()
@@ -80,7 +101,6 @@ async function getOneUser(parent,{id, email}){
     // } 
     if(id){
         const user =await userModel.find({_id:mongoose.Types.ObjectId(id)})
-        console.log(user)
         return user
 
     }else{
@@ -92,6 +112,7 @@ async function getOneUser(parent,{id, email}){
     }
 }
 
+// untuk create user
 async function CreateUser(parent,{email,first_name,last_name,password}){
     let addUser= await new userModel({
         email:email,
@@ -103,6 +124,7 @@ async function CreateUser(parent,{email,first_name,last_name,password}){
     return addUser
 }
 
+//untuk update data user
 async function UpdateUser(parent,{id,email,first_name,last_name,password,status}){
     let changeUser= await userModel.findByIdAndUpdate(id,{
         email:email,
@@ -114,6 +136,7 @@ async function UpdateUser(parent,{id,email,first_name,last_name,password,status}
     return changeUser
 }
 
+//untuk menghapus atau lebih untuk mengganti status dalam data user
 async function DeleteUser(parent,{id,email,first_name,last_name,password,status}){
     let delUser= await userModel.findByIdAndUpdate(id,{
         email:email,
@@ -125,10 +148,12 @@ async function DeleteUser(parent,{id,email,first_name,last_name,password,status}
     return delUser
 }
 
+//untuk generateAccessToken
 function generateAccessToken(payload){
     return jwt.sign(payload, "zetta",{expiresIn:"1h"})
 }
 
+//login user dan mendapatkan token
 async function login(parent,{email, password, secret}){
     let checkUser= await userModel.findOne({email:email});
 
@@ -143,67 +168,18 @@ async function login(parent,{email, password, secret}){
     }
 }
 
-//-------------------------------------------collection ingredients-----------------------------------------------------//
-async function CreateIngredints(parent,{name,stock}){
-    let addIngredint = await new ingModel({
-        name:name,
-        stock:stock
-    })
-    addIngredint.save()
-    return addIngredint
-}
 
-async function getAllIngredients(parent,{name,stock}){
-    if(stock >0){
-        const getData= await ingModel.find({
-            stock:stock
-        })
-        return getData
-    }else{
-        throw new ApolloError(" stock tidak ada")
-    }
-}
-
-async function getOneIngredients(parent,{id}){
-    if(id){
-        const getone= await ingModel.findById(id)
-        return getone
-    }else{
-        return new ApolloError(" id harus dimasukan")
-    }
-}
-
-async function UpdateIngredients(parent,{id, stock}){
-    let changeIng = await ingModel.findByIdAndUpdate(id,{
-        stock:stock
-
-    })
-    return changeIng
-}
-
-async function DeleteIngredients(parent,{id,name,stock,status}){
-    const delIng = await ingModel.findByIdAndUpdate(id,{
-        name:name,
-        stock:stock,
-        status:status
-    },{new:true})
-    return delIng
-}
-
-module.exports={
+const Userresolvers={
     Query:{
         getAllUser,
         getOneUser,
-        login,
-        getAllIngredients,
-        getOneIngredients
+        login
     },
     Mutation:{
         CreateUser,
         UpdateUser,
-        DeleteUser,
-        CreateIngredints,
-        UpdateIngredients,
-        DeleteIngredients
+        DeleteUser
     }
 }
+
+module.exports= Userresolvers

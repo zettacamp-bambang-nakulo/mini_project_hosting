@@ -5,13 +5,23 @@ const { ApolloServer, gql}= require("apollo-server");
 const mongoose= require("mongoose")
 
 //manggil data resolvers yang ada dalam file lain
-const resolvers= require("./resolvers")
+const Userresolvers= require("./resolvers")
+
+//impor ingredients resolvers
+const Ingresolvers= require("./ingredients/resolvers")
 
 //memanggil data typedefs yang ada dalam file lain
 const typeDefs= require("./typeDef")
 const { makeExecutableSchema } = require('@graphql-tools/schema')
 const {applyMiddleware} = require ('graphql-middleware')
 const authMiddelware= require("./auth")
+const {merge}= require("lodash")
+
+//import recipes resolves
+const recipeResolvers= require("./recipes/resolvers")
+
+//import loader ingredients
+const ingredientloaders= require("./recipes/recipeLoader")
 
 
 mongoose.connect("mongodb://localhost/restaurant")
@@ -21,6 +31,12 @@ db.once('open', function() {
   console.log('connection success'); 
 });
 
+const resolvers= merge(
+    Userresolvers,
+    Ingresolvers,
+    recipeResolvers
+)
+
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 const schemaMiddleware = applyMiddleware(schema, authMiddelware)
 
@@ -29,7 +45,8 @@ const apolloServer= new ApolloServer({
     schema:schemaMiddleware,
     context: function({req}){
         return{
-            req:req
+            ingredientloaders,
+            req
         }
     }
 });
