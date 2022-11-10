@@ -32,12 +32,19 @@ const typeDefs= gql`
         stock:Int
         status:all_status
     }
-    
+
     type recipes{
         id:ID
         recipe_name:String
         ingredients:[ingredientid]
         status:all_status
+    }
+
+    type pagination_recipe{
+        data:[recipes]
+        count: Int
+        page: Int
+        max_page: Int
     }
 
     type ingredientid{
@@ -50,6 +57,39 @@ const typeDefs= gql`
         stock:Int
     }
 
+    type transactions{
+        id:ID
+        user_id:user
+        menu:[trans_menu]
+        order_status:oder_status
+        order_date:String
+        status:all_status
+    
+    }
+
+    type trans_menu{
+        recipe_id:recipes
+        amount:Int
+        note:String
+    }
+
+    type populate{
+        transa_populate:String
+    }
+
+    enum oder_status{
+        success
+        failed
+    }
+
+    input transInput{
+        last_name_user:String,
+        recipe_name:String,
+        order_status:oder_status
+        order_date:String
+        
+    }
+
 
     type Query{
         getAllUser(email:String,page:Int,limit:Int):users
@@ -60,8 +100,11 @@ const typeDefs= gql`
         getAllIngredients(stock:Int):[ingredients]
         getOneIngredients(id:ID):ingredients
 
-        getAllRecipes:[recipes]
+        getAllRecipes(page:Int,limit:Int):pagination_recipe
         getOneRecipes(id:ID):recipes
+
+        getAllTransaction(last_name_user:String,recipe_name:String,order_status:oder_status,order_date:String):[transactions]
+        getOneTransaction(id:ID):transactions
     }
 
     type Mutation{
@@ -75,6 +118,7 @@ const typeDefs= gql`
 
         CreateRecipes(recipe_name:String, ingredients:[ingredientidinput],status:all_status):recipes
         UpdateRecipe(id:ID,recipe_name:String, ingredients:[ingredientidinput]):recipes
+        DeleteRecipe(id:ID,status:all_status):recipes
     }
 
 `;

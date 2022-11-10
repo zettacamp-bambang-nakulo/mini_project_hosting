@@ -8,7 +8,7 @@ const mongoose= require("mongoose")
 const Userresolvers= require("./resolvers")
 
 //impor ingredients resolvers
-const Ingresolvers= require("./ingredients/resolvers")
+const Ingresolvers= require("./ingredients/ingredient_resolvers")
 
 //memanggil data typedefs yang ada dalam file lain
 const typeDefs= require("./typeDef")
@@ -18,10 +18,19 @@ const authMiddelware= require("./auth")
 const {merge}= require("lodash")
 
 //import recipes resolves
-const recipeResolvers= require("./recipes/resolvers")
+const recipeResolvers= require("./recipes/recipe_resolvers")
 
 //import loader ingredients
-const ingredientloaders= require("./recipes/recipeLoader")
+const ingredientloaders= require("./ingredients/ingredientLoader")
+
+//import loader recipe
+const loaderRecepi= require("./recipes/recipesLoader")
+
+//import user loader
+const loadUser= require("./userLoader")
+
+//import transactions
+const trans_resolvers= require("./transactions/trans_resolvers")
 
 
 mongoose.connect("mongodb://localhost/restaurant")
@@ -34,7 +43,8 @@ db.once('open', function() {
 const resolvers= merge(
     Userresolvers,
     Ingresolvers,
-    recipeResolvers
+    recipeResolvers,
+    trans_resolvers
 )
 
 const schema = makeExecutableSchema({ typeDefs, resolvers });
@@ -46,6 +56,8 @@ const apolloServer= new ApolloServer({
     context: function({req}){
         return{
             ingredientloaders,
+            loadUser,
+            loaderRecepi,
             req
         }
     }

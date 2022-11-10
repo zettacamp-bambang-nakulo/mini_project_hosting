@@ -1,9 +1,30 @@
 //import model dari recipes
 const recipeModel= require("./recipesModel")
 
+const mongoose = require('mongoose');
+
 //untuk memanggil data recipes dengan menggunakn loader
-async function getAllRecipes(){
-    const getRecipes= await recipeModel.find()
+async function getAllRecipes(parent,{page, limit}){
+    const count = await recipeModel.count()
+    let getRecipes= await recipeModel.aggregate([
+        {
+            $skip : (page-1)*limit
+        },
+        {
+            $limit:limit
+        }
+    ])
+    getRecipes.map((el)=>{
+        el.id = mongoose.Types.ObjectId(el._id)
+            return el
+       })
+       getRecipes = {
+        data: getRecipes,
+        count:count,
+        page: page,
+        max_page:  Math.ceil( count / limit),
+        
+        };
     return  getRecipes
 }
 
@@ -35,14 +56,23 @@ async function CreateRecipes(parent,{recipe_name,ingredients,stock,status}){
  return addrecipes
 }
 
+//untuk mealukan updating pada recepies dengan mengganti id ingredients atau ganti nama,dll
 async function UpdateRecipe(parent,{id,recipe_name,ingredients}){
-    console.log(ingredients)
     const UpdRecipe= await recipeModel.findByIdAndUpdate(id,{
     recipe_name:recipe_name,
     ingredients:ingredients
     },{new:true})
     return UpdRecipe
 }
+
+//untuk melakukan delete atau mengganti satatu
+async function DeleteRecipe(parent,{id,status}){
+    const delrecipe = await recipeModel.findByIdAndUpdate(id,{
+        status:status
+    },{new:true})
+    return delrecipe
+}
+
 
 
 const recipeResolvers={
@@ -52,7 +82,8 @@ const recipeResolvers={
     },
     Mutation:{
         CreateRecipes,
-        UpdateRecipe
+        UpdateRecipe,
+        DeleteRecipe
     },
     ingredientid:{
         ingredient_id:loadingredient

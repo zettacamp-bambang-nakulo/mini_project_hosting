@@ -1,5 +1,5 @@
 const DataLoader= require("dataloader")
-const ingModel= require("../ingredients/ingredientsModel")
+const ingModel= require("./ingredientsModel")
 
 
 const loadingredient= async function(ingredients){
