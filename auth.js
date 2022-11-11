@@ -10,7 +10,7 @@ async function auth (resolve, parent, args, context, info){
         if(err){
             throw new ApolloError(err)
         }
-        return true
+        context.req.user_id = decode
     })
     return await resolve(parent, args, context, info)
 }
@@ -23,6 +23,7 @@ module.exports={
     Mutation:{
         CreateUser:auth,
         UpdateUser:auth,
-        DeleteUser:auth
+        DeleteUser:auth,
+        CreateTransactions:auth
     }
 }

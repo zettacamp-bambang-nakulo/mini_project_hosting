@@ -161,7 +161,7 @@ async function login(parent,{email, password, secret}){
         throw new ApolloError("user tidak ditemukan")
     }
     if(checkUser.email==email && checkUser.password==password){
-        const token = generateAccessToken({email:email, password:password,secret:secret})
+        const token = generateAccessToken({id:checkUser._id, email:email,secret:secret})
         return {token:token}
     }else{
         throw new ApolloError("cek kembali password ada yang salah")

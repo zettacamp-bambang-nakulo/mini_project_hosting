@@ -24,8 +24,7 @@ const transactionsSchema= new mongoose.Schema({
         default:"success"
     },
     order_date:{
-        type:Date,
-        default:new Date
+        type:String
     },
     status:{
         type:String,

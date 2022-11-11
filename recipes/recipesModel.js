@@ -7,7 +7,7 @@ const recipesSchema= new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref:"ingredients"
         },
-        stock:{
+        stock_used:{
             type:Number
         }
     }],

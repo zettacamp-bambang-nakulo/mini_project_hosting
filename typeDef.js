@@ -49,12 +49,12 @@ const typeDefs= gql`
 
     type ingredientid{
         ingredient_id: ingredients
-        stock:Int
+        stock_used:Int
     }
 
     input ingredientidinput{
         ingredient_id:ID
-        stock:Int
+        stock_used:Int
     }
 
     type transactions{
@@ -82,11 +82,10 @@ const typeDefs= gql`
         failed
     }
 
-    input transInput{
-        last_name_user:String,
-        recipe_name:String,
-        order_status:oder_status
-        order_date:String
+    input trans_menuInput{
+        recipe_id:ID
+        amount:Int
+        note:String
         
     }
 
@@ -119,6 +118,9 @@ const typeDefs= gql`
         CreateRecipes(recipe_name:String, ingredients:[ingredientidinput],status:all_status):recipes
         UpdateRecipe(id:ID,recipe_name:String, ingredients:[ingredientidinput]):recipes
         DeleteRecipe(id:ID,status:all_status):recipes
+
+        CreateTransactions(user_id:ID,menu:[trans_menuInput],order_date:String): transactions
+        DeleteTransaction(id:ID):transactions
     }
 
 `;

@@ -45,11 +45,11 @@ async function getOneRecipes(parent,{id}){
 }
 
 //untuk membuat create recipes
-async function CreateRecipes(parent,{recipe_name,ingredients,stock,status}){
+async function CreateRecipes(parent,{recipe_name,ingredients,stock_used,status}){
    const addrecipes= await new recipeModel({
     recipe_name:recipe_name,
     ingredients:ingredients,
-    stock:stock,
+    stock_used:stock_used,
     status:status
    })
  addrecipes.save()

@@ -1,10 +1,15 @@
+//import untuk apollo error
 const { ApolloError } = require('apollo-server-errors')
+//import mongoose
 const mongoose= require("mongoose")
+//import modul transactions
 const transModel= require("./transModel")
+const userModel=require("../userModel")
+const moment=require("moment")
+const jwt= require("jsonwebtoken");
 
 //get data transaction menggunkan lookup dan dataloader
 async function getAllTransaction(parent,{last_name_user, recipe_name,order_status,order_date}){
-    let query ={$and:[]};
     let queryAgg= [];
     if(last_name_user){
         // POPULATE SINI
@@ -57,7 +62,7 @@ async function getAllTransaction(parent,{last_name_user, recipe_name,order_statu
         queryAgg.push(
             {
                 $match:{
-                    order_date:moment(order_date).toDate()
+                    order_date:order_date
                 }
             }
         )
@@ -74,6 +79,8 @@ async function getAllTransaction(parent,{last_name_user, recipe_name,order_statu
    
 }
 
+
+//function untuk memangil data loader dari user
 async function loadUser(parent,args, context){
     if(parent.user_id){
         // console.log(await context.bookloders.load(parent,created_by))
@@ -83,7 +90,7 @@ async function loadUser(parent,args, context){
     
 }
 
-
+//function untuk memangil data loader dari ingredients
 async function loadingredient(parent,args, context){
     if(parent.recipe_id){
         // console.log(await context.bookloders.load(parent,created_by))
@@ -93,6 +100,7 @@ async function loadingredient(parent,args, context){
     
 }
 
+//function untuk mendapatkan satu data dari transactions
 async function getOneTransaction(parent,{id}){
     try{
         if(!id){
@@ -105,12 +113,63 @@ async function getOneTransaction(parent,{id}){
         throw new ApolloError(err)
     }
 }
+
+async function validateStockIngredient(user_id, menus){
+    let transaction_menu = new transModel({menu:menus})
+     transaction_menu = await transModel.populate(transaction_menu,{
+        path:"menu.recipe_id",
+        populate:{
+            path: "ingredients.ingredient_id"
+        }
+     })
+     for (let recipe of transaction_menu.menu){
+        const amount= recipe.amount
+        for(let ingredient of recipe.recipe_id.ingredients){
+            if( ingredient.ingredient_id.stock <= (ingredient.stock_used*amount))return new transModel({user_id, menu:menus, order_status:"failed"})
+        }
+     }
+     return new transModel({user_id, menu:menus, order_status:"success"})
+}
+
+async function CreateTransactions(parent,{menu,order_date},context){
+    let User= context.req.user_id
+    order_date = moment(new Date).format("LLLL")
+    if(menu){
+        const addmenu= await validateStockIngredient(User.id,menu,order_date)
+        return addmenu
+    }else{
+       throw new ApolloError("menu kosong")
+    }
+    
+
+    //validasi stock
+    // for(amount of addmenu.menu){
+    //     console.log(amount.amount*2)
+    // }
+
+}
+
+
+function reduceingredientStock(){}
+
+
+//functions untuk mendelete transactions
+async function DeleteTransaction(parent,{id,status}){
+    let delTrans= await userModel.findByIdAndUpdate(id,{
+        status:status
+    },{new:true})
+    return delTrans
+}
     
 
 const trans_resolvers={
     Query:{
         getAllTransaction,
         getOneTransaction
+    },
+    Mutation:{
+        CreateTransactions,
+        DeleteTransaction
     },
     trans_menu:{
         recipe_id:loadingredient
