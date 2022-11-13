@@ -102,7 +102,7 @@ const typeDefs= gql`
         getAllRecipes(page:Int,limit:Int):pagination_recipe
         getOneRecipes(id:ID):recipes
 
-        getAllTransaction(last_name_user:String,recipe_name:String,order_status:oder_status,order_date:String):[transactions]
+        getAllTransaction(last_name_user:String,recipe_name:String,order_status:oder_status):[transactions]
         getOneTransaction(id:ID):transactions
     }
 

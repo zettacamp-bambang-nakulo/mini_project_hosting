@@ -5,8 +5,10 @@ const mongoose= require("mongoose")
 //import modul transactions
 const transModel= require("./transModel")
 const userModel=require("../userModel")
+const ingModel= require("../ingredients/ingredientsModel")
 const moment=require("moment")
 const jwt= require("jsonwebtoken");
+const { findByIdAndUpdate } = require('../ingredients/ingredientsModel')
 
 //get data transaction menggunkan lookup dan dataloader
 async function getAllTransaction(parent,{last_name_user, recipe_name,order_status,order_date}){
@@ -114,6 +116,12 @@ async function getOneTransaction(parent,{id}){
     }
 }
 
+async function reduceingredientStock(arrIngredient){
+    for (let ingredient of arrIngredient){
+        await ingModel.findByIdAndUpdate(ingredient.ingredient_id,{stock:ingredient.stock})
+    }
+}
+
 async function validateStockIngredient(user_id, menus){
     let transaction_menu = new transModel({menu:menus})
      transaction_menu = await transModel.populate(transaction_menu,{
@@ -122,18 +130,26 @@ async function validateStockIngredient(user_id, menus){
             path: "ingredients.ingredient_id"
         }
      })
+     const ingredientMap=[]
      for (let recipe of transaction_menu.menu){
         const amount= recipe.amount
         for(let ingredient of recipe.recipe_id.ingredients){
+            ingredientMap.push({
+                ingredient_id: ingredient.ingredient_id.id,
+                stock: ingredient.ingredient_id.stock - (ingredient.stock_used*amount)
+            });
+            
             if( ingredient.ingredient_id.stock <= (ingredient.stock_used*amount))return new transModel({user_id, menu:menus, order_status:"failed"})
         }
      }
+     reduceingredientStock(ingredientMap);
      return new transModel({user_id, menu:menus, order_status:"success"})
 }
 
 async function CreateTransactions(parent,{menu,order_date},context){
-    let User= context.req.user_id
     order_date = moment(new Date).format("LLLL")
+    let User= context.req.user_id
+    
     if(menu){
         const addmenu= await validateStockIngredient(User.id,menu,order_date)
         return addmenu
@@ -148,9 +164,6 @@ async function CreateTransactions(parent,{menu,order_date},context){
     // }
 
 }
-
-
-function reduceingredientStock(){}
 
 
 //functions untuk mendelete transactions
