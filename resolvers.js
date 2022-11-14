@@ -110,7 +110,7 @@ async function getOneUser(parent,{id, email}){
 }
 
 // untuk create user
-async function CreateUser(parent,{email,first_name,last_name,password}){
+async function CreateUser(parent,{email,first_name,last_name,password,role}){
     let generalPermit =[
         {
             name:"Menu",
