@@ -11,8 +11,15 @@ const jwt= require("jsonwebtoken");
 const { findByIdAndUpdate } = require('../ingredients/ingredientsModel')
 
 //get data transaction menggunkan lookup dan dataloader
-async function getAllTransaction(parent,{last_name_user, recipe_name,order_status,order_date}){
-    let queryAgg= [];
+async function getAllTransaction(parent,{page, limit,last_name_user, recipe_name,order_status,order_date}){
+    let queryAgg= [
+        {
+            $skip:(page-1)*limit
+        },
+        {
+            $limit:limit
+        }
+    ];
     if(last_name_user){
         // POPULATE SINI
         queryAgg.push( 
@@ -116,6 +123,7 @@ async function getOneTransaction(parent,{id}){
     }
 }
 
+//function untuk mengurangi stock yang ada pada ingredients
 async function reduceingredientStock(arrIngredient){
     for (let ingredient of arrIngredient){
         await ingModel.findByIdAndUpdate(ingredient.ingredient_id,{stock:ingredient.stock})
@@ -138,8 +146,7 @@ async function validateStockIngredient(user_id, menus){
                 ingredient_id: ingredient.ingredient_id.id,
                 stock: ingredient.ingredient_id.stock - (ingredient.stock_used*amount)
             });
-            
-            if( ingredient.ingredient_id.stock <= (ingredient.stock_used*amount))return new transModel({user_id, menu:menus, order_status:"failed"})
+            if( ingredient.ingredient_id.stock < (ingredient.stock_used*amount)) return new transModel({user_id, menu:menus, order_status:"failed"})
         }
      }
      reduceingredientStock(ingredientMap);
@@ -152,6 +159,7 @@ async function CreateTransactions(parent,{menu,order_date},context){
     
     if(menu){
         const addmenu= await validateStockIngredient(User.id,menu,order_date)
+        await addmenu.save()
         return addmenu
     }else{
        throw new ApolloError("menu kosong")

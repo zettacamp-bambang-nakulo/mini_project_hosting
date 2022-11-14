@@ -1,5 +1,7 @@
 //import data model ingredient
 const ingModel= require("./ingredientsModel")
+//import mongoose
+const mongoose= require("mongoose")
 const { ApolloError } = require('apollo-server-errors')
 
 //-------------------------------------------collection ingredients-----------------------------------------------------//
@@ -14,14 +16,30 @@ async function CreateIngredints(parent,{name,stock}){
 }
 
 // get all data berdasarkan dari stock lebih dari 0
-async function getAllIngredients(parent,{stock}){
-    if(stock >0){
-        const getData= await ingModel.find({
-        })
-        return getData
-    }else{
-        throw new ApolloError(" stock tidak ada")
+async function getAllIngredients(parent,{stock,page,limit}){
+    let queryAgg=[];
+    if(stock > 0 ){
+        queryAgg.push(
+            {
+                $skip: (page-1)*limit
+            },
+            {
+                $limit:limit
+            },
+            {
+                $project:{
+                    id:1, name:1,stock:1,status:1
+                }
+            }
+        )
     }
+    let getIng= await ingModel.aggregate(queryAgg)
+    getIng.map((el)=>{
+        el.id = mongoose.Types.ObjectId(el._id)
+            return el
+       })
+    return getIng
+
 }
 
 // untuk mendaptkan salah satu data dengan by id
@@ -39,7 +57,7 @@ async function UpdateIngredients(parent,{id, stock}){
     let changeIng = await ingModel.findByIdAndUpdate(id,{
         stock:stock
 
-    })
+    },{new:true})
     return changeIng
 }
 

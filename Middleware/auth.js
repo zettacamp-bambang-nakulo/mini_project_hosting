@@ -18,12 +18,25 @@ async function auth (resolve, parent, args, context, info){
 module.exports={
     Query:{
         getAllUser:auth,
-        getOneUser:auth
+        getOneUser:auth,
+        getAllIngredients:auth,
+        getOneIngredients:auth,
+        getAllRecipes:auth,
+        getOneRecipes:auth,
+        getAllTransaction:auth,
+        getOneTransaction:auth
     },
     Mutation:{
         CreateUser:auth,
         UpdateUser:auth,
         DeleteUser:auth,
+        CreateIngredints:auth,
+        UpdateIngredients:auth,
+        DeleteIngredients:auth,
+        CreateRecipes:auth,
+        UpdateRecipe:auth,
+        DeleteRecipe:auth,
+        CreateTransactions:auth,
         CreateTransactions:auth
     }
 }

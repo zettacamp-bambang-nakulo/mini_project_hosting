@@ -10,10 +10,12 @@ const { ApolloError } = require('apollo-server-errors')
 //import jwt
 const jwt= require("jsonwebtoken");
 
+//impor bcrypt
+const bcrypt= require("bcrypt")
+
 //untuk create
 
 //untuk Read data
-//belum jadi paginationnya
 async function getAllUser(parent,{email,first_name,last_name, page, limit}){
    let query ={$and:[]};
    let queryAgg= [];
@@ -88,11 +90,6 @@ async function getAllUser(parent,{email,first_name,last_name, page, limit}){
    return dataUser
 }
 
-   //jika kondisi semuanya terisi akan diproses dengan menggunakan pipline match
-   //yang ada pada filter aggregate
-   //unshift buat naruh match diatas
-
-
 //untuk memanggil user berdasarkan id dan email
 async function getOneUser(parent,{id, email}){
     // if(!id && !email){
@@ -114,11 +111,55 @@ async function getOneUser(parent,{id, email}){
 
 // untuk create user
 async function CreateUser(parent,{email,first_name,last_name,password}){
+    // let generalPermit =[
+    //     {
+    //         name:"Menu",
+    //         view:true
+    //     },
+    //     {
+    //         name:"Profile",
+    //         view:true
+    //     },
+    //     {
+    //         name:"Cart",
+    //         view:true
+    //     },
+ 
+    // ]
+    // let usertype=[];
+    // if(role ==="user"){
+    //     usertype.push(
+    //         ...generalPermit,
+    //         {
+    //             name: "Menu Management",
+    //             view: false
+    //         },
+    //         {
+    //             name: "Stock Management",
+    //                 view: false
+    //         }
+    //     )
+        
+    // }else if(role === "admin"){
+    //     usertype.push(
+    //         ...generalPermit,
+    //         {
+    //             name: "Menu Management",
+    //             view: true
+    //         },
+    //         {
+    //             name: "Stock Management",
+    //             view: true
+    //         }
+    //     )
+    // }
+    password = await bcrypt.hash(password, 5)
     let addUser= await new userModel({
         email:email,
         first_name:first_name,
         last_name:last_name,
-        password:password
+        password:password,
+        // usertype:usertype
     })
     addUser.save()
     return addUser
@@ -126,6 +167,8 @@ async function CreateUser(parent,{email,first_name,last_name,password}){
 
 //untuk update data user
 async function UpdateUser(parent,{id,email,first_name,last_name,password,status}){
+    password = await bcrypt.hash(password, 5)
+    console.log(password)
     let changeUser= await userModel.findByIdAndUpdate(id,{
         email:email,
         first_name:first_name,
@@ -154,14 +197,15 @@ function generateAccessToken(payload){
 }
 
 //login user dan mendapatkan token
-async function login(parent,{email, password, secret}){
+async function login(parent,{email, password}){
     let checkUser= await userModel.findOne({email:email});
-
+    password= await bcrypt.compare(password, checkUser.password)
+    console.log(password)
     if(!checkUser ){
         throw new ApolloError("user tidak ditemukan")
     }
-    if(checkUser.email==email && checkUser.password==password){
-        const token = generateAccessToken({id:checkUser._id, email:email,secret:secret})
+    if(password){
+        const token = generateAccessToken({id:checkUser._id, email:email})
         return {token:token}
     }else{
         throw new ApolloError("cek kembali password ada yang salah")
@@ -173,9 +217,10 @@ const Userresolvers={
     Query:{
         getAllUser,
         getOneUser,
-        login
+       
     },
     Mutation:{
+        login,
         CreateUser,
         UpdateUser,
         DeleteUser

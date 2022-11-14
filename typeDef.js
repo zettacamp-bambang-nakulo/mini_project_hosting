@@ -89,24 +89,29 @@ const typeDefs= gql`
         
     }
 
+    enum user_role{
+        user
+        admin
+    }
+
 
     type Query{
         getAllUser(email:String,page:Int,limit:Int):users
         getOneUser(id:ID, email:String):[user]
 
-        login(email:String,password:String, secret:String):login
-
-        getAllIngredients(stock:Int):[ingredients]
+        getAllIngredients(page:Int,limit:Int,stock:Int):[ingredients]
         getOneIngredients(id:ID):ingredients
 
         getAllRecipes(page:Int,limit:Int):pagination_recipe
         getOneRecipes(id:ID):recipes
 
-        getAllTransaction(last_name_user:String,recipe_name:String,order_status:oder_status):[transactions]
+        getAllTransaction(page:Int,limit:Int,last_name_user:String,recipe_name:String,order_status:oder_status):[transactions]
         getOneTransaction(id:ID):transactions
     }
 
     type Mutation{
+        login(email:String,password:String):login
+
         CreateUser(first_name:String,last_name:String,email:String,password:String,status:all_status):user
         UpdateUser(id:ID,first_name:String,last_name:String,email:String,password:String, status:all_status):user
         DeleteUser(id:ID,status:all_status):user
@@ -119,7 +124,7 @@ const typeDefs= gql`
         UpdateRecipe(id:ID,recipe_name:String, ingredients:[ingredientidinput]):recipes
         DeleteRecipe(id:ID,status:all_status):recipes
 
-        CreateTransactions(user_id:ID,menu:[trans_menuInput],order_date:String): transactions
+        CreateTransactions(menu:[trans_menuInput],order_date:String): transactions
         DeleteTransaction(id:ID):transactions
     }
 

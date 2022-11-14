@@ -14,7 +14,7 @@ const Ingresolvers= require("./ingredients/ingredient_resolvers")
 const typeDefs= require("./typeDef")
 const { makeExecutableSchema } = require('@graphql-tools/schema')
 const {applyMiddleware} = require ('graphql-middleware')
-const authMiddelware= require("./auth")
+const authMiddelware= require("./Middleware/auth")
 const {merge}= require("lodash")
 
 //import recipes resolves
