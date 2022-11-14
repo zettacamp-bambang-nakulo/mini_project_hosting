@@ -112,7 +112,7 @@ const typeDefs= gql`
     type Mutation{
         login(email:String,password:String):login
 
-        CreateUser(first_name:String,last_name:String,email:String,password:String,status:all_status):user
+        CreateUser(first_name:String,last_name:String,email:String,password:String,status:all_status,role:user_role):user
         UpdateUser(id:ID,first_name:String,last_name:String,email:String,password:String, status:all_status):user
         DeleteUser(id:ID,status:all_status):user
         

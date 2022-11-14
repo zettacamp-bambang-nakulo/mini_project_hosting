@@ -111,55 +111,55 @@ async function getOneUser(parent,{id, email}){
 
 // untuk create user
 async function CreateUser(parent,{email,first_name,last_name,password}){
-    // let generalPermit =[
-    //     {
-    //         name:"Menu",
-    //         view:true
-    //     },
-    //     {
-    //         name:"Profile",
-    //         view:true
-    //     },
-    //     {
-    //         name:"Cart",
-    //         view:true
-    //     },
+    let generalPermit =[
+        {
+            name:"Menu",
+            view:true
+        },
+        {
+            name:"Profile",
+            view:true
+        },
+        {
+            name:"Cart",
+            view:true
+        },
  
-    // ]
-    // let usertype=[];
-    // if(role ==="user"){
-    //     usertype.push(
-    //         ...generalPermit,
-    //         {
-    //             name: "Menu Management",
-    //             view: false
-    //         },
-    //         {
-    //             name: "Stock Management",
-    //                 view: false
-    //         }
-    //     )
+    ]
+    let usertype=[];
+    if(role ==="user"){
+        usertype.push(
+            ...generalPermit,
+            {
+                name: "Menu Management",
+                view: false
+            },
+            {
+                name: "Stock Management",
+                    view: false
+            }
+        )
         
-    // }else if(role === "admin"){
-    //     usertype.push(
-    //         ...generalPermit,
-    //         {
-    //             name: "Menu Management",
-    //             view: true
-    //         },
-    //         {
-    //             name: "Stock Management",
-    //             view: true
-    //         }
-    //     )
-    // }
+    }else if(role === "admin"){
+        usertype.push(
+            ...generalPermit,
+            {
+                name: "Menu Management",
+                view: true
+            },
+            {
+                name: "Stock Management",
+                view: true
+            }
+        )
+    }
     password = await bcrypt.hash(password, 5)
     let addUser= await new userModel({
         email:email,
         first_name:first_name,
         last_name:last_name,
         password:password,
-        // usertype:usertype
+        usertype:usertype
     })
     addUser.save()
     return addUser

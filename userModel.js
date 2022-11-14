@@ -26,12 +26,12 @@ const userSchema= new mongoose.Schema({
         enum:["active", "deleted"],
         default:"active"
     },
-    // usertype:[
-    //     {
-    //         name:String,
-    //         view:Boolean
-    //     }
-    // ]
+    usertype:[
+        {
+            name:String,
+            view:Boolean
+        }
+    ]
 });
 
 const userModel= mongoose.model("users", userSchema)
