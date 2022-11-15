@@ -34,6 +34,7 @@ const userSchema= new mongoose.Schema({
         {
             name: String,
             slug: String,
+            icon_name: String,
             view : Boolean
         }
     ]

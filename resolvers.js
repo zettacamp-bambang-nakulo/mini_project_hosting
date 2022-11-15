@@ -115,17 +115,20 @@ async function CreateUser(parent,{email,first_name,last_name,password,role}){
         {
             name:"Menu",
             slug:"menu-page",
+            icon_name:"restaurant-menu",
             view: true
         },
         {
             name:"About",
             slug:"about-page",
+            icon_name:"info",
             view: true
 
         },
         {
             name:"Cart",
             slug:"cart-page",
+            icon_name:"shopping-cart",
             view:true
         }
     ]
@@ -136,11 +139,13 @@ async function CreateUser(parent,{email,first_name,last_name,password,role}){
             {
                 name: "Menu Management",
                 slug:"menu-management",
+                icon_name:"restaurant-menu",
                 view: true
             },
             {
                 name: "Stock Management",
                 slug:"stock-management",
+                icon_name:"library-books",
                 view: true
             }
         )
@@ -150,11 +155,13 @@ async function CreateUser(parent,{email,first_name,last_name,password,role}){
             {
                 name: "Menu Management",
                 slug:"menu-management",
+                icon_name:"restaurant-menu",
                 view: false
             },
             {
                 name: "Stock Management",
                 slug:"stock-management",
+                icon_name:"library-books",
                 view: false
             }
         )

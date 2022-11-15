@@ -20,6 +20,7 @@ const typeDefs= gql`
     type user_type{
         name:String
         slug:String
+        icon_name:String
         view:Boolean
     }
 
