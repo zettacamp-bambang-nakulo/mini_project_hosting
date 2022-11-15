@@ -114,18 +114,18 @@ async function CreateUser(parent,{email,first_name,last_name,password,role}){
     let generalPermit= [
         {
             name:"Menu",
-            slug:"menu",
+            slug:"menu-page",
             view: true
         },
         {
             name:"About",
-            slug:"about",
+            slug:"about-page",
             view: true
 
         },
         {
             name:"Cart",
-            slug:"cart",
+            slug:"cart-page",
             view:true
         }
     ]
