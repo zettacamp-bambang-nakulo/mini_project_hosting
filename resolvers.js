@@ -111,45 +111,51 @@ async function getOneUser(parent,{id, email}){
 
 // untuk create user
 async function CreateUser(parent,{email,first_name,last_name,password,role}){
-    let generalPermit =[
+    let generalPermit= [
         {
             name:"Menu",
-            view:true
+            slug:"menu",
+            view: true
         },
         {
-            name:"Profile",
-            view:true
+            name:"About",
+            slug:"about",
+            view: true
+
         },
         {
             name:"Cart",
+            slug:"cart",
             view:true
-        },
- 
+        }
     ]
     let usertype=[];
-    if(role ==="user"){
+    if(role === "admin"){
         usertype.push(
             ...generalPermit,
             {
                 name: "Menu Management",
+                slug:"menu-management",
+                view: true
+            },
+            {
+                name: "Stock Management",
+                slug:"stock-management",
+                view: true
+            }
+        )
+    }else if(role ==="user"){
+        usertype.push(
+            ...generalPermit,
+            {
+                name: "Menu Management",
+                slug:"menu-management",
                 view: false
             },
             {
                 name: "Stock Management",
-                    view: false
-            }
-        )
-        
-    }else if(role === "admin"){
-        usertype.push(
-            ...generalPermit,
-            {
-                name: "Menu Management",
-                view: true
-            },
-            {
-                name: "Stock Management",
-                view: true
+                slug:"stock-management",
+                view: false
             }
         )
     }
@@ -159,6 +165,7 @@ async function CreateUser(parent,{email,first_name,last_name,password,role}){
         first_name:first_name,
         last_name:last_name,
         password:password,
+        role:role,
         usertype:usertype
     })
     addUser.save()
@@ -200,13 +207,22 @@ function generateAccessToken(payload){
 async function login(parent,{email, password}){
     let checkUser= await userModel.findOne({email:email});
     password= await bcrypt.compare(password, checkUser.password)
-    console.log(password)
     if(!checkUser ){
         throw new ApolloError("user tidak ditemukan")
     }
     if(password){
-        const token = generateAccessToken({id:checkUser._id, email:email})
-        return {token:token}
+        const token = generateAccessToken({id:checkUser._id, email:email, role:checkUser.role})
+        return {token:token,
+                id:checkUser._id,
+                email:email,
+                first_name:checkUser.first_name,
+                last_name:checkUser.last_name,
+                password:checkUser.password,
+                role:checkUser.role,
+                status: checkUser.status,
+                usertype:checkUser.usertype
+
+        }
     }else{
         throw new ApolloError("cek kembali password ada yang salah")
     }

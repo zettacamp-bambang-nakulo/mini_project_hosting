@@ -15,9 +15,13 @@ const transactionsSchema= new mongoose.Schema({
         },
         note:{
             type:String
-        }
+        },
+        
 
     }],
+    total:{
+        type:Number
+    },
     order_status:{
         type:String,
         enum:["success", "failed"],

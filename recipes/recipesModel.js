@@ -11,6 +11,10 @@ const recipesSchema= new mongoose.Schema({
             type:Number
         }
     }],
+    price:{
+        type:Number
+
+    },
     status:{
         type:String,
         enum:["active", "deleted"],

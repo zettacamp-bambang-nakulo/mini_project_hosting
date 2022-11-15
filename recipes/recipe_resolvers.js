@@ -45,11 +45,12 @@ async function getOneRecipes(parent,{id}){
 }
 
 //untuk membuat create recipes
-async function CreateRecipes(parent,{recipe_name,ingredients,stock_used,status}){
+async function CreateRecipes(parent,{recipe_name,ingredients,stock_used,price,status}){
    const addrecipes= await new recipeModel({
     recipe_name:recipe_name,
     ingredients:ingredients,
     stock_used:stock_used,
+    price:price,
     status:status
    })
  addrecipes.save()
@@ -57,10 +58,11 @@ async function CreateRecipes(parent,{recipe_name,ingredients,stock_used,status})
 }
 
 //untuk mealukan updating pada recepies dengan mengganti id ingredients atau ganti nama,dll
-async function UpdateRecipe(parent,{id,recipe_name,ingredients}){
+async function UpdateRecipe(parent,{id,recipe_name,ingredients,price}){
     const UpdRecipe= await recipeModel.findByIdAndUpdate(id,{
     recipe_name:recipe_name,
-    ingredients:ingredients
+    ingredients:ingredients,
+    price:price
     },{new:true})
     return UpdRecipe
 }

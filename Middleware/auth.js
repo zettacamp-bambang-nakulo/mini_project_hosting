@@ -27,7 +27,6 @@ module.exports={
         getOneTransaction:auth
     },
     Mutation:{
-        CreateUser:auth,
         UpdateUser:auth,
         DeleteUser:auth,
         CreateIngredints:auth,

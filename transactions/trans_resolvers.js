@@ -7,7 +7,6 @@ const transModel= require("./transModel")
 const userModel=require("../userModel")
 const ingModel= require("../ingredients/ingredientsModel")
 const moment=require("moment")
-const jwt= require("jsonwebtoken");
 const { findByIdAndUpdate } = require('../ingredients/ingredientsModel')
 
 //get data transaction menggunkan lookup dan dataloader
@@ -139,26 +138,30 @@ async function validateStockIngredient(user_id, menus){
         }
      })
      const ingredientMap=[]
+     let total = 0
      for (let recipe of transaction_menu.menu){
         const amount= recipe.amount
+        const price = recipe.recipe_id.price
+        total = price* amount
         for(let ingredient of recipe.recipe_id.ingredients){
             ingredientMap.push({
                 ingredient_id: ingredient.ingredient_id.id,
                 stock: ingredient.ingredient_id.stock - (ingredient.stock_used*amount)
             });
-            if( ingredient.ingredient_id.stock < (ingredient.stock_used*amount)) return new transModel({user_id, menu:menus, order_status:"failed"})
+            if( ingredient.ingredient_id.stock < (ingredient.stock_used*amount)) return new transModel({user_id, menu:menus,order_status:"failed"})
+            
         }
      }
      reduceingredientStock(ingredientMap);
-     return new transModel({user_id, menu:menus, order_status:"success"})
+     return new transModel({user_id, menu:menus, total:total,order_status:"success"})
 }
 
-async function CreateTransactions(parent,{menu,order_date},context){
+async function CreateTransactions(parent,{menu,total,order_date},context){
+    // console.log(price)
     order_date = moment(new Date).format("LLLL")
     let User= context.req.user_id
-    
     if(menu){
-        const addmenu= await validateStockIngredient(User.id,menu,order_date)
+        const addmenu= await validateStockIngredient(User.id,menu,total,order_date)
         await addmenu.save()
         return addmenu
     }else{

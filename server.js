@@ -14,7 +14,11 @@ const Ingresolvers= require("./ingredients/ingredient_resolvers")
 const typeDefs= require("./typeDef")
 const { makeExecutableSchema } = require('@graphql-tools/schema')
 const {applyMiddleware} = require ('graphql-middleware')
+
 const authMiddelware= require("./Middleware/auth")
+
+const authRole= require("./Middleware/auth_role")
+
 const {merge}= require("lodash")
 
 //import recipes resolves
@@ -48,7 +52,7 @@ const resolvers= merge(
 )
 
 const schema = makeExecutableSchema({ typeDefs, resolvers });
-const schemaMiddleware = applyMiddleware(schema, authMiddelware)
+const schemaMiddleware = applyMiddleware(schema, authMiddelware, authRole)
 
 
 const apolloServer= new ApolloServer({
