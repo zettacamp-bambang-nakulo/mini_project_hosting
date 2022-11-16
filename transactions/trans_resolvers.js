@@ -140,6 +140,7 @@ async function validateStockIngredient(user_id, menus){
      const ingredientMap=[]
      let total = 0
      for (let recipe of transaction_menu.menu){
+        if( recipe.recipe_id.status === "deleted") throw new ApolloError("status deleted")
         const amount= recipe.amount
         const price = recipe.recipe_id.price
         total = price* amount
@@ -156,6 +157,7 @@ async function validateStockIngredient(user_id, menus){
      return new transModel({user_id, menu:menus, total:total,order_status:"success"})
 }
 
+//function untuk membuat transactions dengan menggunakan validasi
 async function CreateTransactions(parent,{menu,total,order_date},context){
     // console.log(price)
     order_date = moment(new Date).format("LLLL")

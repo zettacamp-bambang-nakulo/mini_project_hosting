@@ -1,5 +1,7 @@
 //import data model ingredient
 const ingModel= require("./ingredientsModel")
+//impor model recipe
+const recipeModel = require("../recipes/recipesModel")
 //import mongoose
 const mongoose= require("mongoose")
 const { ApolloError } = require('apollo-server-errors')
@@ -30,8 +32,15 @@ async function getAllIngredients(parent,{stock,page,limit}){
                 $project:{
                     id:1, name:1,stock:1,status:1
                 }
+            },
+            {
+                $match:{
+                    status:"active"
+                }
             }
         )
+    }else{
+        throw new ApolloError("stock empty")
     }
     let getIng= await ingModel.aggregate(queryAgg)
     getIng.map((el)=>{
@@ -53,8 +62,9 @@ async function getOneIngredients(parent,{id}){
 }
 
 //update stock
-async function UpdateIngredients(parent,{id, stock}){
+async function UpdateIngredients(parent,{id,name, stock}){
     let changeIng = await ingModel.findByIdAndUpdate(id,{
+        name:name,
         stock:stock
 
     },{new:true})
@@ -63,12 +73,29 @@ async function UpdateIngredients(parent,{id, stock}){
 
 //delete atau merubah data ingredients
 async function DeleteIngredients(parent,{id,name,stock,status}){
-    const delIng = await ingModel.findByIdAndUpdate(id,{
-        name:name,
-        stock:stock,
-        status:status
-    },{new:true})
+    const checkRecipe = await recipeModel.aggregate([
+        {
+            $match:{
+                "ingredients.ingredient_id":mongoose.Types.ObjectId(id)
+            }
+        }
+    ])
+    if(checkRecipe.length !== 0){
+        throw new ApolloError("ingredients has been used ")
+    }else{
+        const delIng = await ingModel.findByIdAndUpdate(id,
+        {
+            $set:{
+                status:"deleted"
+            }
+        })
+        if(!delIng){
+            throw new ApolloError("ingredients is delete")
+        }
+        
     return delIng
+    }
+
 }
 
 

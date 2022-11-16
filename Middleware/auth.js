@@ -36,6 +36,5 @@ module.exports={
         UpdateRecipe:auth,
         DeleteRecipe:auth,
         CreateTransactions:auth,
-        CreateTransactions:auth
     }
 }

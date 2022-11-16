@@ -122,7 +122,7 @@ async function CreateUser(parent,{email,first_name,last_name,password,role}){
             name:"About",
             slug:"about-page",
             icon_name:"info",
-            view: true
+            view: false
 
         },
         {
@@ -145,7 +145,7 @@ async function CreateUser(parent,{email,first_name,last_name,password,role}){
             {
                 name: "Stock Management",
                 slug:"stock-management",
-                icon_name:"library-books",
+                icon_name:"list",
                 view: true
             }
         )
@@ -161,7 +161,7 @@ async function CreateUser(parent,{email,first_name,last_name,password,role}){
             {
                 name: "Stock Management",
                 slug:"stock-management",
-                icon_name:"library-books",
+                icon_name:"list",
                 view: false
             }
         )
@@ -207,7 +207,7 @@ async function DeleteUser(parent,{id,email,first_name,last_name,password,status}
 
 //untuk generateAccessToken
 function generateAccessToken(payload){
-    return jwt.sign(payload, "zetta",{expiresIn:"1h"})
+    return jwt.sign(payload, "zetta",{expiresIn:"1d"})
 }
 
 //login user dan mendapatkan token

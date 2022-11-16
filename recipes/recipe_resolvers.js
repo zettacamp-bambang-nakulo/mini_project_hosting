@@ -1,7 +1,14 @@
 //import model dari recipes
 const recipeModel= require("./recipesModel")
 
+//impor ingredients
+const ingredientsModel= require("../ingredients/ingredientsModel")
+
+//impor moongoose
 const mongoose = require('mongoose');
+
+//impor apollo error
+const { ApolloError } = require('apollo-server-errors')
 
 //untuk memanggil data recipes dengan menggunakn loader
 async function getAllRecipes(parent,{page, limit}){
@@ -26,6 +33,18 @@ async function getAllRecipes(parent,{page, limit}){
         
         };
     return  getRecipes
+}
+
+//function untuk available atau jumlah yang hanya bisa dibeli
+
+async function getAvailable(parent,args,context){
+    const minStock = []
+    for (let ingredient of parent.ingredients){
+        const recipe_ing = await ingredientsModel.findById(ingredient.ingredient_id)
+        if(!recipe_ing)throw new ApolloError("id not found")
+        minStock.push(Math.floor(recipe_ing.stock / ingredient.stock_used))
+    }
+    return Math.min(...minStock)
 }
 
 //untuk loader data  ingredients
@@ -89,6 +108,9 @@ const recipeResolvers={
     },
     ingredientid:{
         ingredient_id:loadingredient
+    },
+    recipes:{
+        available: getAvailable
     }
 }
 

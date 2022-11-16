@@ -57,6 +57,8 @@ const typeDefs= gql`
         ingredients:[ingredientid]
         price:Int
         status:all_status
+        available:Int
+
     }
 
     type pagination_recipe{
@@ -136,9 +138,9 @@ const typeDefs= gql`
         UpdateUser(id:ID,first_name:String,last_name:String,email:String,password:String, status:all_status):user
         DeleteUser(id:ID,status:all_status):user
         
-        CreateIngredints(name:String, stock:Int): [ingredients]
-        UpdateIngredients(id:ID, stock:Int): ingredients
-        DeleteIngredients(id:ID,status:all_status):ingredients
+        CreateIngredints(name:String, stock:Int): ingredients
+        UpdateIngredients(id:ID,name:String,stock:Int): ingredients
+        DeleteIngredients(id:ID):ingredients
 
         CreateRecipes(recipe_name:String, ingredients:[ingredientidinput],status:all_status,price:Int):recipes
         UpdateRecipe(id:ID,recipe_name:String, ingredients:[ingredientidinput],price:Int):recipes
