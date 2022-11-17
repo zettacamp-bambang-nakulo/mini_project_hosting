@@ -8,7 +8,8 @@ const ingredientsModel= require("../ingredients/ingredientsModel")
 const mongoose = require('mongoose');
 
 //impor apollo error
-const { ApolloError } = require('apollo-server-errors')
+const { ApolloError } = require('apollo-server-errors');
+const ingModel = require("../ingredients/ingredientsModel");
 
 //untuk memanggil data recipes dengan menggunakn loader
 async function getAllRecipes(parent,{page, limit}){
@@ -19,7 +20,8 @@ async function getAllRecipes(parent,{page, limit}){
         },
         {
             $limit:limit
-        }
+        },
+        
     ])
     getRecipes.map((el)=>{
         el.id = mongoose.Types.ObjectId(el._id)
@@ -65,23 +67,29 @@ async function getOneRecipes(parent,{id}){
 
 //untuk membuat create recipes
 async function CreateRecipes(parent,{recipe_name,ingredients,stock_used,price,status}){
-   const addrecipes= await new recipeModel({
-    recipe_name:recipe_name,
-    ingredients:ingredients,
-    stock_used:stock_used,
-    price:price,
-    status:status
-   })
- addrecipes.save()
- return addrecipes
+//    for(let bahan of ingredients){
+//     const checkBahan = await ingModel.findById(bahan.ingredient_id)
+//     if(checkBahan.status === "deleted")throw new ApolloError("bahan tidak bisa digunakan")
+//    }
+        const addrecipes= await new recipeModel({
+         recipe_name:recipe_name,
+         ingredients:ingredients,
+         stock_used:stock_used,
+         price:price,
+         status:status
+        })
+      addrecipes.save()
+      return addrecipes
+
 }
 
 //untuk mealukan updating pada recepies dengan mengganti id ingredients atau ganti nama,dll
-async function UpdateRecipe(parent,{id,recipe_name,ingredients,price}){
+async function UpdateRecipe(parent,{id,recipe_name,ingredients,price,status}){
     const UpdRecipe= await recipeModel.findByIdAndUpdate(id,{
     recipe_name:recipe_name,
     ingredients:ingredients,
-    price:price
+    price:price,
+    status:status
     },{new:true})
     return UpdRecipe
 }

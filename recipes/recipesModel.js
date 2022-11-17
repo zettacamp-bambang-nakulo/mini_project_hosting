@@ -17,8 +17,8 @@ const recipesSchema= new mongoose.Schema({
     },
     status:{
         type:String,
-        enum:["active", "deleted"],
-        default:"active"
+        enum:["publish","unpublish", "deleted"],
+        default:"publish"
     } 
 })
 

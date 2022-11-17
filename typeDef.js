@@ -56,9 +56,15 @@ const typeDefs= gql`
         recipe_name:String
         ingredients:[ingredientid]
         price:Int
-        status:all_status
+        status:status_recipe
         available:Int
 
+    }
+
+    enum status_recipe{
+        publish
+        unpublish
+        deleted
     }
 
     type pagination_recipe{
@@ -142,9 +148,9 @@ const typeDefs= gql`
         UpdateIngredients(id:ID,name:String,stock:Int): ingredients
         DeleteIngredients(id:ID):ingredients
 
-        CreateRecipes(recipe_name:String, ingredients:[ingredientidinput],status:all_status,price:Int):recipes
-        UpdateRecipe(id:ID,recipe_name:String, ingredients:[ingredientidinput],price:Int):recipes
-        DeleteRecipe(id:ID,status:all_status):recipes
+        CreateRecipes(recipe_name:String, ingredients:[ingredientidinput],status:status_recipe,price:Int):recipes
+        UpdateRecipe(id:ID,recipe_name:String, ingredients:[ingredientidinput],price:Int,status:status_recipe):recipes
+        DeleteRecipe(id:ID,status:status_recipe):recipes
 
         CreateTransactions(menu:[trans_menuInput],order_date:String): transactions
         DeleteTransaction(id:ID):transactions

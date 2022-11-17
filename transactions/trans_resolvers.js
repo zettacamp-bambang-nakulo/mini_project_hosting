@@ -178,6 +178,12 @@ async function CreateTransactions(parent,{menu,total,order_date},context){
 
 }
 
+//nambahin parameter baru dan jika updatenya false makan update biasa , jika true makan manggil validasi semua
+// async function UpdateTransaction(parent,{id,menu},context){
+//     let User= context.req.user_id
+//     const updateTrans= await validateStockIngredient()
+
+// }
 
 //functions untuk mendelete transactions
 async function DeleteTransaction(parent,{id,status}){
