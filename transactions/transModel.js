@@ -24,8 +24,8 @@ const transactionsSchema= new mongoose.Schema({
     },
     order_status:{
         type:String,
-        enum:["success", "failed"],
-        default:"success"
+        enum:["success", "failed","pending"],
+        default:"pending"
     },
     order_date:{
         type:String,

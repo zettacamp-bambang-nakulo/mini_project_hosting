@@ -19,7 +19,14 @@ const recipesSchema= new mongoose.Schema({
         type:String,
         enum:["publish","unpublish", "deleted"],
         default:"publish"
-    } 
+    },
+    description:{
+        type:String
+    },
+    image:{
+        type:String
+
+    }
 })
 
 const recipeModel= mongoose.model("recipes", recipesSchema)

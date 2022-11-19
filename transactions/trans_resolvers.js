@@ -8,6 +8,7 @@ const userModel=require("../userModel")
 const ingModel= require("../ingredients/ingredientsModel")
 const moment=require("moment")
 const { findByIdAndUpdate } = require('../ingredients/ingredientsModel')
+const recipeModel = require('../recipes/recipesModel')
 
 //get data transaction menggunkan lookup dan dataloader
 async function getAllTransaction(parent,{page, limit,last_name_user, recipe_name,order_status,order_date}){
@@ -143,7 +144,7 @@ async function validateStockIngredient(user_id, menus){
         if( recipe.recipe_id.status === "deleted") throw new ApolloError("status deleted")
         const amount= recipe.amount
         const price = recipe.recipe_id.price
-        total = price* amount
+        total = (price*amount)+(price*amount)+(price*amount)
         for(let ingredient of recipe.recipe_id.ingredients){
             ingredientMap.push({
                 ingredient_id: ingredient.ingredient_id.id,
@@ -158,13 +159,20 @@ async function validateStockIngredient(user_id, menus){
 }
 
 //function untuk membuat transactions dengan menggunakan validasi
-async function CreateTransactions(parent,{menu,total,order_date},context){
+async function CreateTransactions(parent,{menu,order_date,order_status},context){
     // console.log(price)
     order_date = moment(new Date).format("LLLL")
     let User= context.req.user_id
     if(menu){
-        const addmenu= await validateStockIngredient(User.id,menu,total,order_date)
+        const addmenu= await new transModel({
+            user_id:User.id,
+            menu:menu,
+            order_date,
+            order_status:"pending"
+
+        })
         await addmenu.save()
+        // console.log(addmenu)
         return addmenu
     }else{
        throw new ApolloError("menu kosong")
@@ -185,9 +193,87 @@ async function CreateTransactions(parent,{menu,total,order_date},context){
 
 // }
 
+async function getTotal(menu){
+    let total= []
+    let totalPrice= []
+    for(recipe of menu){
+        recipeTotal = await recipeModel.findOne(
+            {
+                id :recipe.recipe_id
+            }
+        )
+        total.push(recipe.amount*recipeTotal.price)
+        totalPrice = total.reduce((a,b)=>a+b);
+    }
+    return totalPrice
+}
+
+async function addCart(parent,{id,menu},context){
+    let User= context.req.user_id
+    const check = await transModel.aggregate([
+        {
+            $match:{
+                "User_id":mongoose.Types.ObjectId(User)
+            }
+        }
+    ])
+    if(check){
+        const total_price = await getTotal(menu)
+        console.log(total_price)
+        const add = await transModel.findByIdAndUpdate(id,
+        {
+            $push:{
+                menu:menu
+            },
+        },{new:true}       
+            )
+            
+        return add
+    }
+
+
+}
+
+// belum jadi yang deleted
+async function deleteCart(parent,{id},context){
+    let User= context.req.user_id
+    const check = await transModel.findOne(
+        {
+            $and:[
+                {
+                    order_status:"pending"
+                },
+                {
+                    user_id:User.id
+                }
+            ]
+        }
+    )
+    const checkRecipe = await transModel.find(
+        {
+            menu:{
+                $elemMatch:{
+                    _id:mongoose.Types.ObjectId(id)
+                }
+            }
+        }
+    )
+    // console.log(checkRecipe)
+    if(checkRecipe){
+        const delCart = await transModel.findByIdAndUpdate(check.id,
+            {
+               $pull:{
+                menu:{recipe_id:mongoose.Types.ObjectId(id)},
+               }  
+            },{new:true}
+            )
+        return delCart
+    }
+}
+
 //functions untuk mendelete transactions
 async function DeleteTransaction(parent,{id,status}){
-    let delTrans= await userModel.findByIdAndUpdate(id,{
+    let delTrans= await transModel.findByIdAndUpdate(id,{
         status:status
     },{new:true})
     return delTrans
@@ -201,7 +287,10 @@ const trans_resolvers={
     },
     Mutation:{
         CreateTransactions,
-        DeleteTransaction
+        DeleteTransaction,
+        addCart,
+        deleteCart
+        
     },
     trans_menu:{
         recipe_id:loadingredient

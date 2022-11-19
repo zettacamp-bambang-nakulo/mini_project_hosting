@@ -19,6 +19,7 @@ async function CreateIngredints(parent,{name,stock}){
 
 // get all data berdasarkan dari stock lebih dari 0
 async function getAllIngredients(parent,{stock,page,limit}){
+    
     let queryAgg=[];
     if(stock > 0 ){
         queryAgg.push(
@@ -38,15 +39,39 @@ async function getAllIngredients(parent,{stock,page,limit}){
                     status:"active"
                 }
             }
+            
         )
     }else{
         throw new ApolloError("stock empty")
     }
-    let getIng= await ingModel.aggregate(queryAgg)
-    getIng.map((el)=>{
+    let count = await ingModel.find({status:"active"})
+    const totaldoc = count.length
+
+    let count_del = await ingModel.find({status:"deleted"})
+    const totaldocdel = count_del.length
+
+    let count_total = await ingModel.count()
+    let getIng= await ingModel.aggregate(queryAgg,[
+        {
+            $skip : (page-1)*limit
+        },
+        {
+            $limit:limit
+        },
+       ]
+       )
+       getIng.map((el)=>{
         el.id = mongoose.Types.ObjectId(el._id)
             return el
        })
+       getIng = {
+        data: getIng,
+        count_active:totaldoc,
+        count_deleted:totaldocdel,
+        count_total:count_total,
+        page: page,
+        max_page:  Math.ceil( count_total/ limit),
+    };   
     return getIng
 
 }

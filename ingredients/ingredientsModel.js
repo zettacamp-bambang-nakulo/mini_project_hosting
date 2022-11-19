@@ -1,7 +1,10 @@
 const mongoose= require("mongoose")
 
 const ingredientScheman= new mongoose.Schema({
-    name:String,
+    name:{
+        type:String,
+        unique:true
+    },
     stock:Number,
     status:{
         type:String,

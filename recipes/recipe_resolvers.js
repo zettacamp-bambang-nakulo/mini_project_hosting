@@ -13,7 +13,19 @@ const ingModel = require("../ingredients/ingredientsModel");
 
 //untuk memanggil data recipes dengan menggunakn loader
 async function getAllRecipes(parent,{page, limit}){
-    const count = await recipeModel.count()
+    //untuk menghitung jumlah documen yang berstatus publish
+    let publish = await recipeModel.find({status:"publish"})
+    const count_publish = publish.length
+    
+    //untuk menghitung jumlah documen yang berstatus unpublish
+    let unpublish = await recipeModel.find({status:"unpublish"})
+    const count_unpublish = unpublish.length
+
+    //untuk menghitung jumlah documen yang berstatus deleted
+    let deleted = await recipeModel.find({status:"deleted"})
+    const count_deleted = deleted.length
+
+    const count_total = await recipeModel.count()
     let getRecipes= await recipeModel.aggregate([
         {
             $skip : (page-1)*limit
@@ -28,10 +40,13 @@ async function getAllRecipes(parent,{page, limit}){
             return el
        })
        getRecipes = {
-        data: getRecipes,
-        count:count,
+        data_recipes: getRecipes,
+        count_publish:count_publish,
+        count_unpublish:count_unpublish,
+        count_deleted:count_deleted,
+        count_total:count_total,
         page: page,
-        max_page:  Math.ceil( count / limit),
+        max_page:  Math.ceil( count_total / limit),
         
         };
     return  getRecipes
@@ -48,7 +63,6 @@ async function getAvailable(parent,args,context){
     }
     return Math.min(...minStock)
 }
-
 //untuk loader data  ingredients
 async function loadingredient(parent,args, context){
     if(parent.ingredient_id){
@@ -66,13 +80,15 @@ async function getOneRecipes(parent,{id}){
 }
 
 //untuk membuat create recipes
-async function CreateRecipes(parent,{recipe_name,ingredients,stock_used,price,status}){
+async function CreateRecipes(parent,{recipe_name,description,image,ingredients,stock_used,price,status}){
 //    for(let bahan of ingredients){
 //     const checkBahan = await ingModel.findById(bahan.ingredient_id)
 //     if(checkBahan.status === "deleted")throw new ApolloError("bahan tidak bisa digunakan")
 //    }
         const addrecipes= await new recipeModel({
          recipe_name:recipe_name,
+         description:description,
+         image:image,
          ingredients:ingredients,
          stock_used:stock_used,
          price:price,
@@ -84,12 +100,14 @@ async function CreateRecipes(parent,{recipe_name,ingredients,stock_used,price,st
 }
 
 //untuk mealukan updating pada recepies dengan mengganti id ingredients atau ganti nama,dll
-async function UpdateRecipe(parent,{id,recipe_name,ingredients,price,status}){
+async function UpdateRecipe(parent,{id,recipe_name,description,image,ingredients,price,status}){
     const UpdRecipe= await recipeModel.findByIdAndUpdate(id,{
     recipe_name:recipe_name,
+    description:description,
+    image:image,
     ingredients:ingredients,
     price:price,
-    status:status
+    status:status,
     },{new:true})
     return UpdRecipe
 }

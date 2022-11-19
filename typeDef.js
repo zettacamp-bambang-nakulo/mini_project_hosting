@@ -58,6 +58,8 @@ const typeDefs= gql`
         price:Int
         status:status_recipe
         available:Int
+        description:String
+        image:String
 
     }
 
@@ -68,8 +70,11 @@ const typeDefs= gql`
     }
 
     type pagination_recipe{
-        data:[recipes]
-        count: Int
+        data_recipes:[recipes]
+        count_publish: Int
+        count_unpublish:Int
+        count_deleted:Int
+        count_total:Int
         page: Int
         max_page: Int
     }
@@ -77,6 +82,14 @@ const typeDefs= gql`
     type ingredientid{
         ingredient_id: ingredients
         stock_used:Int
+    }
+    type pagination_ingredients{
+        data:[ingredients]
+        count_active: Int
+        count_deleted:Int
+        count_total:Int
+        page: Int
+        max_page: Int
     }
 
     input ingredientidinput{
@@ -108,6 +121,7 @@ const typeDefs= gql`
     enum oder_status{
         success
         failed
+        pending
     }
 
     input trans_menuInput{
@@ -127,7 +141,7 @@ const typeDefs= gql`
         getAllUser(email:String,page:Int,limit:Int):users
         getOneUser(id:ID, email:String):[user]
 
-        getAllIngredients(page:Int,limit:Int,stock:Int):[ingredients]
+        getAllIngredients(page:Int,limit:Int,stock:Int):pagination_ingredients
         getOneIngredients(id:ID):ingredients
 
         getAllRecipes(page:Int,limit:Int):pagination_recipe
@@ -148,12 +162,15 @@ const typeDefs= gql`
         UpdateIngredients(id:ID,name:String,stock:Int): ingredients
         DeleteIngredients(id:ID):ingredients
 
-        CreateRecipes(recipe_name:String, ingredients:[ingredientidinput],status:status_recipe,price:Int):recipes
-        UpdateRecipe(id:ID,recipe_name:String, ingredients:[ingredientidinput],price:Int,status:status_recipe):recipes
+        CreateRecipes(recipe_name:String, description:String, image:String, ingredients:[ingredientidinput],status:status_recipe,price:Int):recipes
+        UpdateRecipe(id:ID,recipe_name:String,description:String, image:String, ingredients:[ingredientidinput],price:Int,status:status_recipe):recipes
         DeleteRecipe(id:ID,status:status_recipe):recipes
 
-        CreateTransactions(menu:[trans_menuInput],order_date:String): transactions
+        CreateTransactions(menu:[trans_menuInput]): transactions
         DeleteTransaction(id:ID):transactions
+
+        addCart(id:ID,menu:[trans_menuInput]):transactions
+        deleteCart(id:ID):transactions
     }
 
 `;

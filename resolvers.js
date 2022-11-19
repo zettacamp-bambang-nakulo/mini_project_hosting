@@ -69,7 +69,7 @@ async function getAllUser(parent,{email,first_name,last_name, page, limit}){
     };
    return dataUser
    }
-
+   const count = await userModel.count()
    let dataUser = await userModel.aggregate(queryAgg,[
     {
         $skip : (page-1)*limit
@@ -84,7 +84,10 @@ async function getAllUser(parent,{email,first_name,last_name, page, limit}){
         return el
    })
    dataUser = {
-    data: dataUser
+    data: dataUser,
+    count:count,
+    page: page,
+    max_page:  Math.ceil( count / limit),
     
     };
    return dataUser
