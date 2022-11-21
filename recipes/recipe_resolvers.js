@@ -115,7 +115,9 @@ async function UpdateRecipe(parent,{id,recipe_name,description,image,ingredients
 //untuk melakukan delete atau mengganti satatu
 async function DeleteRecipe(parent,{id,status}){
     const delrecipe = await recipeModel.findByIdAndUpdate(id,{
-        status:status
+        $set:{
+            status:"deleted"
+        }
     },{new:true})
     return delrecipe
 }

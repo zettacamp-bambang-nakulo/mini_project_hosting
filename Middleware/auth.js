@@ -37,6 +37,9 @@ module.exports={
         DeleteRecipe:auth,
         CreateTransactions:auth,
         addCart:auth,
+        OrderTransaction:auth,
+        incrAmaount:auth,
+        decrAmaount:auth,
         deleteCart:auth
     }
 }

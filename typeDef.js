@@ -3,9 +3,9 @@ const { ApolloServer, gql}= require("apollo-server");
 const typeDefs= gql`
     type user{
         _id:ID
-        first_name:String!
-        last_name:String!
-        email:String!
+        first_name:String
+        last_name:String
+        email:String
         password:String
         role:user_role
         status:all_status
@@ -109,6 +109,7 @@ const typeDefs= gql`
     }
 
     type trans_menu{
+        _id:ID
         recipe_id:recipes
         amount:Int
         note:String
@@ -136,6 +137,16 @@ const typeDefs= gql`
         admin
     }
 
+    type pagination_transactions{
+        data_transaction:[transactions]
+        count_pending:Int
+        count_success: Int
+        count_failed:Int
+        count_total:Int
+        page: Int
+        max_page: Int
+    }
+
 
     type Query{
         getAllUser(email:String,page:Int,limit:Int):users
@@ -147,7 +158,7 @@ const typeDefs= gql`
         getAllRecipes(page:Int,limit:Int):pagination_recipe
         getOneRecipes(id:ID):recipes
 
-        getAllTransaction(page:Int,limit:Int,last_name_user:String,recipe_name:String,order_status:oder_status):[transactions]
+        getAllTransaction(page:Int,limit:Int,last_name_user:String,recipe_name:String,order_status:oder_status):pagination_transactions
         getOneTransaction(id:ID):transactions
     }
 
@@ -164,12 +175,15 @@ const typeDefs= gql`
 
         CreateRecipes(recipe_name:String, description:String, image:String, ingredients:[ingredientidinput],status:status_recipe,price:Int):recipes
         UpdateRecipe(id:ID,recipe_name:String,description:String, image:String, ingredients:[ingredientidinput],price:Int,status:status_recipe):recipes
-        DeleteRecipe(id:ID,status:status_recipe):recipes
+        DeleteRecipe(id:ID):recipes
 
         CreateTransactions(menu:[trans_menuInput]): transactions
         DeleteTransaction(id:ID):transactions
 
         addCart(id:ID,menu:[trans_menuInput]):transactions
+        OrderTransaction(id:ID):transactions
+        incrAmaount(menu_id:ID,amount:Int):transactions
+        decrAmaount(menu_id:ID,amount:Int):transactions
         deleteCart(id:ID):transactions
     }
 

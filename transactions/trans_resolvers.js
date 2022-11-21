@@ -11,7 +11,8 @@ const { findByIdAndUpdate } = require('../ingredients/ingredientsModel')
 const recipeModel = require('../recipes/recipesModel')
 
 //get data transaction menggunkan lookup dan dataloader
-async function getAllTransaction(parent,{page, limit,last_name_user, recipe_name,order_status,order_date}){
+async function getAllTransaction(parent,{page, limit,last_name_user, recipe_name,order_status,order_date},context){
+    // console.log(context.loadUser)
     let queryAgg= [
         {
             $skip:(page-1)*limit
@@ -67,6 +68,24 @@ async function getAllTransaction(parent,{page, limit,last_name_user, recipe_name
         )
         
     }
+    if(order_status ==="pending"){
+        queryAgg.push(
+            {
+                $match:{
+                    order_status:order_status
+                }
+            }
+        )
+    }
+    if(order_status ==="failed"){
+        queryAgg.push(
+            {
+                $match:{
+                    order_status:order_status
+                }
+            }
+        )
+    }
     if(order_date){
         queryAgg.push(
             {
@@ -76,11 +95,31 @@ async function getAllTransaction(parent,{page, limit,last_name_user, recipe_name
             }
         )
     }
+    let pending = await transModel.find({order_status:"pending"})
+    const count_pending = pending.length
+
+    let success = await transModel.find({order_status:"success"})
+    const count_success = success.length
+
+    let failed = await transModel.find({order_status:"failed"})
+    const count_failed = failed.length
+
+    const count_total = await transModel.count()
     let getTrans = await transModel.aggregate(queryAgg)
     getTrans.map((el)=>{
         el.id = mongoose.Types.ObjectId(el._id)
             return el
        })
+       getTrans = {
+        data_transaction: getTrans,
+        count_pending:count_pending,
+        count_success:count_success,
+        count_failed:count_failed,
+        count_total:count_total,
+        page: page,
+        max_page:  Math.ceil( count_total / limit),
+        
+        };
     return getTrans
 
     // const getTrans= await transModel.find()
@@ -93,7 +132,7 @@ async function getAllTransaction(parent,{page, limit,last_name_user, recipe_name
 async function loadUser(parent,args, context){
     if(parent.user_id){
         // console.log(await context.bookloders.load(parent,created_by))
-        // console.log(parent)
+    // console.log(await context.loadUser.load(parent.user_id))
     return await context.loadUser.load(parent.user_id)
     }
     
@@ -130,7 +169,7 @@ async function reduceingredientStock(arrIngredient){
     }
 }
 
-async function validateStockIngredient(user_id, menus){
+async function validateStockIngredient(user_id,id, menus){
     let transaction_menu = new transModel({menu:menus})
      transaction_menu = await transModel.populate(transaction_menu,{
         path:"menu.recipe_id",
@@ -144,22 +183,24 @@ async function validateStockIngredient(user_id, menus){
         if( recipe.recipe_id.status === "deleted") throw new ApolloError("status deleted")
         const amount= recipe.amount
         const price = recipe.recipe_id.price
-        total = (price*amount)+(price*amount)+(price*amount)
+        total += price*amount
         for(let ingredient of recipe.recipe_id.ingredients){
             ingredientMap.push({
                 ingredient_id: ingredient.ingredient_id.id,
                 stock: ingredient.ingredient_id.stock - (ingredient.stock_used*amount)
             });
-            if( ingredient.ingredient_id.stock < (ingredient.stock_used*amount)) return new transModel({user_id, menu:menus,order_status:"failed"})
+            if( ingredient.ingredient_id.stock < (ingredient.stock_used*amount)) return new transModel({user_id, id,menu:menus,order_status:"failed"})
             
         }
      }
      reduceingredientStock(ingredientMap);
-     return new transModel({user_id, menu:menus, total:total,order_status:"success"})
+     const test = await transModel.findByIdAndUpdate(id,{menu:menus, total:total,order_status:"success"},{new:true})
+    //  return await transModel({user_id,id, )
+    return test
 }
 
 //function untuk membuat transactions dengan menggunakan validasi
-async function CreateTransactions(parent,{menu,order_date,order_status},context){
+async function CreateTransactions(parent,{menu,order_date},context){
     // console.log(price)
     order_date = moment(new Date).format("LLLL")
     let User= context.req.user_id
@@ -168,7 +209,6 @@ async function CreateTransactions(parent,{menu,order_date,order_status},context)
             user_id:User.id,
             menu:menu,
             order_date,
-            order_status:"pending"
 
         })
         await addmenu.save()
@@ -193,21 +233,19 @@ async function CreateTransactions(parent,{menu,order_date,order_status},context)
 
 // }
 
-async function getTotal(menu){
-    let total= []
-    let totalPrice= []
-    for(recipe of menu){
-        recipeTotal = await recipeModel.findOne(
-            {
-                id :recipe.recipe_id
-            }
-        )
-        total.push(recipe.amount*recipeTotal.price)
-        totalPrice = total.reduce((a,b)=>a+b);
+async function getTotal({menu,amount},args,context){
+    // console.log(menu)
+    let total_price = 0 
+    for(let el of menu ){
+        const recipe = await recipeModel.findById(el.recipe_id)
+        total_price += (recipe.price *el.amount)
+
     }
-    return totalPrice
+    return total_price
+
 }
 
+//function untuk menambahkan menu ke dalam add cart
 async function addCart(parent,{id,menu},context){
     let User= context.req.user_id
     const check = await transModel.aggregate([
@@ -218,12 +256,10 @@ async function addCart(parent,{id,menu},context){
         }
     ])
     if(check){
-        const total_price = await getTotal(menu)
-        console.log(total_price)
         const add = await transModel.findByIdAndUpdate(id,
         {
             $push:{
-                menu:menu
+                menu:menu,
             },
         },{new:true}       
             )
@@ -234,7 +270,66 @@ async function addCart(parent,{id,menu},context){
 
 }
 
-// belum jadi yang deleted
+//function untuk melakukan transaksi keseluruhannya
+async function OrderTransaction(parent,{id,order_status},context){
+    let User= context.req.user_id
+    const checktrans = await transModel.findOne(
+        {
+            $and:[
+                {
+                    order_status:"pending"
+                },
+                {
+                    user_id:User.id
+                }
+            ]
+        }
+    )
+    // console.log(checktrans)
+    if(checktrans){
+        // let orderValidasi = await validateStockIngredient(User.id,id,checktrans.menu)
+        let coba = await validateStockIngredient(User.id,checktrans.id,checktrans.menu)
+        console.log(coba.order_status)
+        // coba.save()
+        return coba
+        
+        // console.log( await transModel.findByIdAndUpdate(id,{coba}))
+    }
+
+}
+
+//function untuk menambah amount
+async function incrAmaount(parent,{menu_id,amount,total},context){
+
+     await transModel.updateOne({
+        "menu._id":mongoose.Types.ObjectId(menu_id),
+       
+    }, {
+        $inc:{
+            "menu.$.amount": amount,
+        }
+    },{new:true}
+    )
+    return await transModel.findOne({"menu._id":mongoose.Types.ObjectId(menu_id)})
+    
+}
+
+//function untuk mengurangi amount
+async function decrAmaount(parent,{menu_id,amount},context){
+    await transModel.updateOne({
+       "menu._id":mongoose.Types.ObjectId(menu_id),
+      
+   }, {
+       $inc:{
+           "menu.$.amount": -amount
+       }
+   },{new:true}
+   )
+   return await transModel.findOne({"menu._id":mongoose.Types.ObjectId(menu_id)})
+   
+}
+
+// function untuk mendelete cart yang ditambahin
 async function deleteCart(parent,{id},context){
     let User= context.req.user_id
     const check = await transModel.findOne(
@@ -274,7 +369,9 @@ async function deleteCart(parent,{id},context){
 //functions untuk mendelete transactions
 async function DeleteTransaction(parent,{id,status}){
     let delTrans= await transModel.findByIdAndUpdate(id,{
-        status:status
+        $set:{
+            status:"deleted"
+        }
     },{new:true})
     return delTrans
 }
@@ -289,15 +386,22 @@ const trans_resolvers={
         CreateTransactions,
         DeleteTransaction,
         addCart,
+        OrderTransaction,
+        incrAmaount,
+        decrAmaount,
         deleteCart
-        
     },
     trans_menu:{
         recipe_id:loadingredient
     },
     transactions:{
-        user_id:loadUser
+        user_id:loadUser,
+        total:getTotal
     },
+    // transactions:{
+    //     total:getTotal
+    // }
+
 
 }
 
