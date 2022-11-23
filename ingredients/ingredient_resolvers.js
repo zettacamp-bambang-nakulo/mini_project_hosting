@@ -24,6 +24,11 @@ async function getAllIngredients(parent,{stock,page,limit}){
     if(stock > 0 ){
         queryAgg.push(
             {
+                $match:{
+                    status:"active"
+                }
+            },
+            {
                 $skip: (page-1)*limit
             },
             {
@@ -35,13 +40,13 @@ async function getAllIngredients(parent,{stock,page,limit}){
                 }
             },
             {
-                $match:{
-                    status:"active"
+                $sort:{
+                    status:-1
                 }
-            }
-            
+            },
         )
-    }else{
+    }
+    else{
         throw new ApolloError("stock empty")
     }
     let count = await ingModel.find({status:"active"})

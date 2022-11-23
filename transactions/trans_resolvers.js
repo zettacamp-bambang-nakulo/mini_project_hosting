@@ -59,29 +59,30 @@ async function getAllTransaction(parent,{page, limit,last_name_user, recipe_name
         )
     }
     if(order_status=="success"){
-        queryAgg.push(
+        queryAgg.unshift(
             {
                 $match:{
-                    order_status:order_status
+                    order_status:"success"
                 }
             }
         )
         
     }
     if(order_status ==="pending"){
-        queryAgg.push(
+        queryAgg.unshift(
             {
                 $match:{
-                    order_status:order_status
+                    order_status:"pending",
+                    status:"active"
                 }
             }
         )
     }
     if(order_status ==="failed"){
-        queryAgg.push(
+        queryAgg.unshift(
             {
                 $match:{
-                    order_status:order_status
+                    order_status:"failed"
                 }
             }
         )
@@ -95,14 +96,21 @@ async function getAllTransaction(parent,{page, limit,last_name_user, recipe_name
             }
         )
     }
-    let pending = await transModel.find({order_status:"pending"})
-    const count_pending = pending.length
-
     let success = await transModel.find({order_status:"success"})
     const count_success = success.length
+    
+   
+    let pending = await transModel.findOne({order_status:"pending"})
+    let count_pending = 0
+    if(pending){
+        count_pending = pending.menu.length
+    }
+    // 
+
 
     let failed = await transModel.find({order_status:"failed"})
     const count_failed = failed.length
+    // console.log(count_failed)
 
     const count_total = await transModel.count()
     let getTrans = await transModel.aggregate(queryAgg)
@@ -117,6 +125,7 @@ async function getAllTransaction(parent,{page, limit,last_name_user, recipe_name
         count_failed:count_failed,
         count_total:count_total,
         page: page,
+        // maxe_page_pending:Math.ceil(count_pending/limit),
         max_page:  Math.ceil( count_total / limit),
         
         };
@@ -149,14 +158,13 @@ async function loadingredient(parent,args, context){
 }
 
 //function untuk mendapatkan satu data dari transactions
-async function getOneTransaction(parent,{id}){
+async function getOneTransaction(parent,args,context){
     try{
-        if(!id){
-            throw new ApolloError("masukan id")
-        }else{
-            const getOneTrans = await transModel.findById(id)
+            let User= context.req.user_id
+            const getOneTrans = await transModel.findOne({order_status:"pending", user_id:User.id})
+            console.log(getOneTrans)
             return getOneTrans 
-        }
+        
     }catch(err){
         throw new ApolloError(err)
     }
@@ -189,22 +197,69 @@ async function validateStockIngredient(user_id,id, menus){
                 ingredient_id: ingredient.ingredient_id.id,
                 stock: ingredient.ingredient_id.stock - (ingredient.stock_used*amount)
             });
-            if( ingredient.ingredient_id.stock < (ingredient.stock_used*amount)) return new transModel({user_id, id,menu:menus,order_status:"failed"})
+            if( ingredient.ingredient_id.stock < (ingredient.stock_used*amount)){
+                let newtest =  await transModel.findByIdAndUpdate(id,{user_id,menu:menus,order_status:"failed"},{new:true})
+                return newtest
+                
+            }
             
         }
-     }
-     reduceingredientStock(ingredientMap);
+    }
      const test = await transModel.findByIdAndUpdate(id,{menu:menus, total:total,order_status:"success"},{new:true})
-    //  return await transModel({user_id,id, )
+     reduceingredientStock(ingredientMap);
     return test
 }
 
 //function untuk membuat transactions dengan menggunakan validasi
-async function CreateTransactions(parent,{menu,order_date},context){
-    // console.log(price)
-    order_date = moment(new Date).format("LLLL")
+
+//tidak kepakai
+// async function CreateTransactions(parent,{menu,order_date},context){
+//     // console.log(price)
+//     order_date = moment(new Date).format("LLLL")
+//     let User= context.req.user_id
+//     if(menu){
+//         const addmenu= await new transModel({
+//             user_id:User.id,
+//             menu:menu,
+//             order_date,
+
+//         })
+//         await addmenu.save()
+//         // console.log(addmenu)
+//         return addmenu
+//     }else{
+//        throw new ApolloError("menu kosong")
+//     }
+    
+
+//     //validasi stock
+//     // for(amount of addmenu.menu){
+//     //     console.log(amount.amount*2)
+//     // }
+
+// }
+
+//nambahin parameter baru dan jika updatenya false makan update biasa , jika true makan manggil validasi semua
+// async function UpdateTransaction(parent,{id,menu},context){
+//     let User= context.req.user_id
+//     const updateTrans= await validateStockIngredient()
+
+// }
+async function addCart(parent,{menu,order_date},context){
     let User= context.req.user_id
-    if(menu){
+    const check = await transModel.findOne({
+        $and:[
+            {
+                order_status:"pending"
+            },
+            {
+                user_id:User.id
+            }
+        ]
+    })
+    // console.log(check)
+    if(!check){
+        order_date = moment(new Date).format("LLLL")
         const addmenu= await new transModel({
             user_id:User.id,
             menu:menu,
@@ -214,88 +269,97 @@ async function CreateTransactions(parent,{menu,order_date},context){
         await addmenu.save()
         // console.log(addmenu)
         return addmenu
-    }else{
-       throw new ApolloError("menu kosong")
-    }
-    
 
-    //validasi stock
-    // for(amount of addmenu.menu){
-    //     console.log(amount.amount*2)
-    // }
+    }else{
+        let add = await transModel.findByIdAndUpdate(check.id,
+            {
+                $push:{
+                    menu:menu,
+                },
+            },{new:true}       
+                ) 
+        
+        return add
+    }
 
 }
 
-//nambahin parameter baru dan jika updatenya false makan update biasa , jika true makan manggil validasi semua
-// async function UpdateTransaction(parent,{id,menu},context){
-//     let User= context.req.user_id
-//     const updateTrans= await validateStockIngredient()
+async function TotalRecipe(menu,args,context){
+    // console.log(menu.recipe_id)
+    let Total_Recipe = 0
+        const recipe = await recipeModel.findById(menu.recipe_id).lean()
+        if (recipe){
+            Total_Recipe = (recipe.price *menu.amount)
+            // console.log(Total_Recipe)
+        }
+    return Total_Recipe
 
-// }
+}
 
 async function getTotal({menu,amount},args,context){
     // console.log(menu)
     let total_price = 0 
+    if(menu){
+
+    
     for(let el of menu ){
         const recipe = await recipeModel.findById(el.recipe_id)
-        total_price += (recipe.price *el.amount)
-
+        if(recipe){
+                total_price += (recipe.price *el.amount)
+        }
+        
+        // if(recipe.price){
+        //     console.log(recipe.price)
+        // }
     }
+}
     return total_price
 
 }
 
 //function untuk menambahkan menu ke dalam add cart
-async function addCart(parent,{id,menu},context){
-    let User= context.req.user_id
-    const check = await transModel.aggregate([
-        {
-            $match:{
-                "User_id":mongoose.Types.ObjectId(User)
-            }
+async function UpdateCart(parent,{id,note},context){
+    // console.log(id)
+    await transModel.updateOne({
+        "menu._id":mongoose.Types.ObjectId(id),
+       
+    }, {
+        $set:{
+
+            "menu.$.note": note
         }
-    ])
-    if(check){
-        const add = await transModel.findByIdAndUpdate(id,
-        {
-            $push:{
-                menu:menu,
-            },
-        },{new:true}       
-            )
-            
-        return add
-    }
-
-
+    },{new:true}
+    )
+    return  await transModel.findOne({"menu._id":mongoose.Types.ObjectId(id)})
 }
-
 //function untuk melakukan transaksi keseluruhannya
-async function OrderTransaction(parent,{id,order_status},context){
+async function OrderTransaction(parent,args,context){
     let User= context.req.user_id
     const checktrans = await transModel.findOne(
         {
             $and:[
                 {
-                    order_status:"pending"
+                    user_id:User.id
                 },
                 {
-                    user_id:User.id
-                }
+                    order_status:"pending"
+                },
             ]
         }
     )
     // console.log(checktrans)
     if(checktrans){
         // let orderValidasi = await validateStockIngredient(User.id,id,checktrans.menu)
-        let coba = await validateStockIngredient(User.id,checktrans.id,checktrans.menu)
-        console.log(coba.order_status)
+        let coba = await validateStockIngredient(User.id,checktrans._id,checktrans.menu)
+        // console.log(coba.order_status)
         // coba.save()
         return coba
+
+
+
         
         // console.log( await transModel.findByIdAndUpdate(id,{coba}))
     }
-
 }
 
 //function untuk menambah amount
@@ -358,7 +422,7 @@ async function deleteCart(parent,{id},context){
         const delCart = await transModel.findByIdAndUpdate(check.id,
             {
                $pull:{
-                menu:{recipe_id:mongoose.Types.ObjectId(id)},
+                menu:{_id:mongoose.Types.ObjectId(id)},
                }  
             },{new:true}
             )
@@ -383,24 +447,22 @@ const trans_resolvers={
         getOneTransaction
     },
     Mutation:{
-        CreateTransactions,
-        DeleteTransaction,
         addCart,
+        DeleteTransaction,
+        UpdateCart,
         OrderTransaction,
         incrAmaount,
         decrAmaount,
         deleteCart
     },
     trans_menu:{
-        recipe_id:loadingredient
+        recipe_id:loadingredient,
+        total_recipe:TotalRecipe
     },
     transactions:{
         user_id:loadUser,
         total:getTotal
     },
-    // transactions:{
-    //     total:getTotal
-    // }
 
 
 }

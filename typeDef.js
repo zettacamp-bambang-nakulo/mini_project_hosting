@@ -113,6 +113,7 @@ const typeDefs= gql`
         recipe_id:recipes
         amount:Int
         note:String
+        total_recipe:Int
     }
 
     type populate{
@@ -159,7 +160,7 @@ const typeDefs= gql`
         getOneRecipes(id:ID):recipes
 
         getAllTransaction(page:Int,limit:Int,last_name_user:String,recipe_name:String,order_status:oder_status):pagination_transactions
-        getOneTransaction(id:ID):transactions
+        getOneTransaction:transactions
     }
 
     type Mutation{
@@ -177,11 +178,11 @@ const typeDefs= gql`
         UpdateRecipe(id:ID,recipe_name:String,description:String, image:String, ingredients:[ingredientidinput],price:Int,status:status_recipe):recipes
         DeleteRecipe(id:ID):recipes
 
-        CreateTransactions(menu:[trans_menuInput]): transactions
+        addCart(menu:[trans_menuInput]): transactions
         DeleteTransaction(id:ID):transactions
 
-        addCart(id:ID,menu:[trans_menuInput]):transactions
-        OrderTransaction(id:ID):transactions
+        UpdateCart(id:ID,note:String):transactions
+        OrderTransaction:transactions
         incrAmaount(menu_id:ID,amount:Int):transactions
         decrAmaount(menu_id:ID,amount:Int):transactions
         deleteCart(id:ID):transactions

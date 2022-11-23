@@ -32,7 +32,7 @@ async function getAllRecipes(parent,{page, limit}){
         },
         {
             $limit:limit
-        },
+        }
         
     ])
     getRecipes.map((el)=>{
