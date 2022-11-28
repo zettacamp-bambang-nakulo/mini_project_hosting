@@ -100,15 +100,15 @@ async function getOneUser(parent,{id, email}){
     //     return user
     // } 
     if(id){
-        const user =await userModel.find({_id:mongoose.Types.ObjectId(id)})
-        return user
+        const checkUser =await userModel.find({_id:mongoose.Types.ObjectId(id)})
+        return checkUser
 
     }else{
-        const user= await userModel.find({
+        const checkEmail= await userModel.find({
             email:email
         })
-        console.log(user)
-        return user
+
+        return  checkEmail
     }
 }
 
@@ -132,6 +132,12 @@ async function CreateUser(parent,{email,first_name,last_name,password,role}){
             name:"Cart",
             slug:"cart-page",
             icon_name:"shopping-cart",
+            view:true
+        },
+        {
+            name:"History",
+            slug:"history-page",
+            icon_name:"history",
             view:true
         }
     ]
@@ -178,6 +184,9 @@ async function CreateUser(parent,{email,first_name,last_name,password,role}){
         role:role,
         usertype:usertype
     })
+    if(!role){
+        throw new ApolloError("role harus diisi!")
+    }
     addUser.save()
     return addUser
 }
@@ -185,7 +194,6 @@ async function CreateUser(parent,{email,first_name,last_name,password,role}){
 //untuk update data user
 async function UpdateUser(parent,{id,email,first_name,last_name,password,status}){
     password = await bcrypt.hash(password, 5)
-    console.log(password)
     let changeUser= await userModel.findByIdAndUpdate(id,{
         email:email,
         first_name:first_name,
@@ -216,10 +224,10 @@ function generateAccessToken(payload){
 //login user dan mendapatkan token
 async function login(parent,{email, password}){
     let checkUser= await userModel.findOne({email:email});
-    password= await bcrypt.compare(password, checkUser.password)
     if(!checkUser ){
-        throw new ApolloError("user tidak ditemukan")
+        throw new ApolloError("user tidak ditemukan atau email salah")
     }
+    password= await bcrypt.compare(password, checkUser.password)
     if(password){
         const token = generateAccessToken({id:checkUser._id, email:email, role:checkUser.role})
         return {token:token,
@@ -234,7 +242,7 @@ async function login(parent,{email, password}){
 
         }
     }else{
-        throw new ApolloError("cek kembali password ada yang salah")
+        throw new ApolloError("cek kembali email dan password ada yang salah")
     }
 }
 

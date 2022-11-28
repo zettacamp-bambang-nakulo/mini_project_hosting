@@ -18,11 +18,16 @@ async function CreateIngredints(parent,{name,stock}){
 }
 
 // get all data berdasarkan dari stock lebih dari 0
-async function getAllIngredients(parent,{stock,page,limit}){
+async function getAllIngredients(parent,{name,stock,page,limit}){
     
     let queryAgg=[];
-    if(stock > 0 ){
-        queryAgg.push(
+    if(stock > 0 || name){
+        queryAgg.unshift(
+            {
+                $match:{
+                    name: new RegExp(name,"i")
+                }
+            },
             {
                 $match:{
                     status:"active"
@@ -93,12 +98,15 @@ async function getOneIngredients(parent,{id}){
 
 //update stock
 async function UpdateIngredients(parent,{id,name, stock}){
-    let changeIng = await ingModel.findByIdAndUpdate(id,{
+    let updateIng = await ingModel.findByIdAndUpdate(id,{
         name:name,
         stock:stock
 
     },{new:true})
-    return changeIng
+    if(stock < 0){
+        throw new ApolloError("stock tidak bisa minus")
+    }
+    return updateIng
 }
 
 //delete atau merubah data ingredients

@@ -31,6 +31,11 @@ const typeDefs= gql`
         max_page: Int
     }
 
+    enum user_role{
+        user
+        admin
+    }
+
     type login{
         token:String
         id:ID
@@ -51,34 +56,6 @@ const typeDefs= gql`
         status:all_status
     }
 
-    type recipes{
-        id:ID
-        recipe_name:String
-        ingredients:[ingredientid]
-        price:Int
-        status:status_recipe
-        available:Int
-        description:String
-        image:String
-
-    }
-
-    enum status_recipe{
-        publish
-        unpublish
-        deleted
-    }
-
-    type pagination_recipe{
-        data_recipes:[recipes]
-        count_publish: Int
-        count_unpublish:Int
-        count_deleted:Int
-        count_total:Int
-        page: Int
-        max_page: Int
-    }
-
     type ingredientid{
         ingredient_id: ingredients
         stock_used:Int
@@ -95,6 +72,37 @@ const typeDefs= gql`
     input ingredientidinput{
         ingredient_id:ID
         stock_used:Int
+    }
+
+    type recipes{
+        id:ID
+        recipe_name:String
+        ingredients:[ingredientid]
+        price:Int
+        status:status_recipe
+        available:Int
+        description:String
+        image:String
+        menu_highlight:Boolean
+        special_offers:Boolean
+        discount:Int
+
+    }
+    
+    enum status_recipe{
+        publish
+        unpublish
+        deleted
+    }
+
+    type pagination_recipe{
+        data_recipes:[recipes]
+        count_publish: Int
+        count_unpublish:Int
+        count_deleted:Int
+        count_total:Int
+        page: Int
+        max_page: Int
     }
 
     type transactions{
@@ -133,11 +141,6 @@ const typeDefs= gql`
         
     }
 
-    enum user_role{
-        user
-        admin
-    }
-
     type pagination_transactions{
         data_transaction:[transactions]
         count_pending:Int
@@ -153,10 +156,11 @@ const typeDefs= gql`
         getAllUser(email:String,page:Int,limit:Int):users
         getOneUser(id:ID, email:String):[user]
 
-        getAllIngredients(page:Int,limit:Int,stock:Int):pagination_ingredients
+        getAllIngredients(page:Int,limit:Int,name:String,stock:Int,):pagination_ingredients
         getOneIngredients(id:ID):ingredients
 
-        getAllRecipes(page:Int,limit:Int):pagination_recipe
+        getAllRecipes(page:Int,limit:Int,recipe_name:String,menu_highlight:Boolean,status:status_recipe,special_offers:Boolean):pagination_recipe
+        getAllRecipesNoToken(page:Int,limit:Int,recipe_name:String,menu_highlight:Boolean, status:status_recipe,special_offers:Boolean):pagination_recipe
         getOneRecipes(id:ID):recipes
 
         getAllTransaction(page:Int,limit:Int,last_name_user:String,recipe_name:String,order_status:oder_status):pagination_transactions
@@ -174,8 +178,8 @@ const typeDefs= gql`
         UpdateIngredients(id:ID,name:String,stock:Int): ingredients
         DeleteIngredients(id:ID):ingredients
 
-        CreateRecipes(recipe_name:String, description:String, image:String, ingredients:[ingredientidinput],status:status_recipe,price:Int):recipes
-        UpdateRecipe(id:ID,recipe_name:String,description:String, image:String, ingredients:[ingredientidinput],price:Int,status:status_recipe):recipes
+        CreateRecipes(recipe_name:String, description:String, image:String, ingredients:[ingredientidinput],status:status_recipe,price:Int,menu_highlight:Boolean,special_offers:Boolean):recipes
+        UpdateRecipe(id:ID,recipe_name:String,description:String, image:String, ingredients:[ingredientidinput],price:Int,status:status_recipe,menu_highlight:Boolean,special_offers:Boolean):recipes
         DeleteRecipe(id:ID):recipes
 
         addCart(menu:[trans_menuInput]): transactions

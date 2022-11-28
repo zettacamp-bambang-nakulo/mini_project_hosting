@@ -18,7 +18,7 @@ const recipesSchema= new mongoose.Schema({
     status:{
         type:String,
         enum:["publish","unpublish", "deleted"],
-        default:"publish"
+        default:"unpublish"
     },
     description:{
         type:String
@@ -26,6 +26,18 @@ const recipesSchema= new mongoose.Schema({
     image:{
         type:String
 
+    },
+    menu_highlight:{
+        type:Boolean,
+        default: false
+    },
+    special_offers:{
+        type:Boolean,
+        default: false
+    },
+    discount:{
+        type:Number,
+        default:20
     }
 })
 

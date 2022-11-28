@@ -12,7 +12,7 @@ async function authRole (resolve, parent, args, context, info){
 
 module.exports={
     Query:{
-        // getAllIngredients:authRole,
+        getAllIngredients:authRole,
     },
     Mutation:{
         CreateIngredints:authRole,
