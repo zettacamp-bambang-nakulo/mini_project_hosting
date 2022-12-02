@@ -114,6 +114,10 @@ async function getOneUser(parent,{id, email}){
 
 // untuk create user
 async function CreateUser(parent,{email,first_name,last_name,password,role}){
+    const checkemail = await userModel.findOne({email:email})
+    if(checkemail){
+        throw new ApolloError("email been used")
+    }
     let generalPermit= [
         {
             name:"Menu",
