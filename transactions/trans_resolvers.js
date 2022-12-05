@@ -307,6 +307,7 @@ async function reduceingredientStock(arrIngredient){
 
 async function validateStockIngredient(user_id,id, menus){
     let transaction_menu = new transModel({menu:menus})
+    const user = await userModel.findOne({_id:user_id})
      transaction_menu = await transModel.populate(transaction_menu,{
         path:"menu.recipe_id",
         populate:{
@@ -334,8 +335,21 @@ async function validateStockIngredient(user_id,id, menus){
             
         }
     }
+    let total_all = await getTotal({menu:menus})
+    await userModel.updateOne({_id:user_id},
+        {
+            $set:{
+                saldo:user.saldo-=total_all
+            }
+        }
+        )
+        if(user.saldo < total){
+            throw new ApolloError("less balance")
+        }
+    
      const ValidasiSuccess = await transModel.findByIdAndUpdate(id,{menu:menus, total:total,order_status:"success"},{new:true})
      reduceingredientStock(ingredientMap);
+    //  userSaldo
     return ValidasiSuccess
 }
 
@@ -476,6 +490,7 @@ async function UpdateCart(parent,{id,note},context){
 }
 //function untuk melakukan transaksi keseluruhannya
 async function OrderTransaction(parent,args,context){
+    console.log(context.user)
     let User= context.req.user_id
     const checktrans = await transModel.findOne(
         {
@@ -596,7 +611,7 @@ const trans_resolvers={
         OrderTransaction,
         incrAmaount,
         decrAmaount,
-        deleteCart
+        deleteCart,
     },
     trans_menu:{
         recipe_id:loadingredient,
