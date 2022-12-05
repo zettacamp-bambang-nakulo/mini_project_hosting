@@ -28,7 +28,12 @@ const userSchema= new mongoose.Schema({
     },
     role:{
         type: String,
-        enum:["user", "admin"]
+        enum:["user", "admin"],
+        default:"user"
+    },
+    saldo:{
+        type:Number,
+        default:500000
     },
     usertype:[
         {

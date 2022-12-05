@@ -9,6 +9,7 @@ const typeDefs= gql`
         password:String
         role:user_role
         status:all_status
+        saldo:Int
         usertype:[user_type]
     }
 
@@ -112,6 +113,7 @@ const typeDefs= gql`
         order_status:oder_status
         order_date:String
         total:Int
+        balanceAdmin:Int
         status:all_status
     
     }
@@ -164,6 +166,7 @@ const typeDefs= gql`
         getOneRecipes(id:ID):recipes
 
         getAllTransaction(page:Int,limit:Int,last_name_user:String,recipe_name:String,order_status:oder_status):pagination_transactions
+        getHistory(page:Int,limit:Int,last_name_user:String,recipe_name:String,order_status:oder_status):pagination_transactions
         getOneTransaction:transactions
     }
 
@@ -173,13 +176,14 @@ const typeDefs= gql`
         CreateUser(first_name:String,last_name:String,email:String,password:String,status:all_status,role:user_role):user
         UpdateUser(id:ID,first_name:String,last_name:String,email:String,password:String, status:all_status):user
         DeleteUser(id:ID,status:all_status):user
+        ForgetPassword(email:String,password:String):user
         
         CreateIngredints(name:String, stock:Int): ingredients
         UpdateIngredients(id:ID,name:String,stock:Int): ingredients
         DeleteIngredients(id:ID):ingredients
 
-        CreateRecipes(recipe_name:String, description:String, image:String, ingredients:[ingredientidinput],status:status_recipe,price:Int,menu_highlight:Boolean,special_offers:Boolean):recipes
-        UpdateRecipe(id:ID,recipe_name:String,description:String, image:String, ingredients:[ingredientidinput],price:Int,status:status_recipe,menu_highlight:Boolean,special_offers:Boolean):recipes
+        CreateRecipes(recipe_name:String, description:String, image:String, ingredients:[ingredientidinput],status:status_recipe,price:Int,menu_highlight:Boolean,special_offers:Boolean,discount:Int):recipes
+        UpdateRecipe(id:ID,recipe_name:String,description:String, image:String, ingredients:[ingredientidinput],price:Int,status:status_recipe,menu_highlight:Boolean,special_offers:Boolean,discount:Int):recipes
         DeleteRecipe(id:ID):recipes
 
         addCart(menu:[trans_menuInput]): transactions

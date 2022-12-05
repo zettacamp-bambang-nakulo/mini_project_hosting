@@ -113,10 +113,10 @@ async function getOneUser(parent,{id, email}){
 }
 
 // untuk create user
-async function CreateUser(parent,{email,first_name,last_name,password,role}){
+async function CreateUser(parent,{email,first_name,last_name,password,role="user"}){
     const checkemail = await userModel.findOne({email:email})
     if(checkemail){
-        throw new ApolloError("email has been used")
+        throw new ApolloError("email been used")
     }
     let generalPermit= [
         {
@@ -132,20 +132,9 @@ async function CreateUser(parent,{email,first_name,last_name,password,role}){
             view: false
 
         },
-        {
-            name:"Cart",
-            slug:"cart-page",
-            icon_name:"shopping-cart",
-            view:true
-        },
-        {
-            name:"History",
-            slug:"history-page",
-            icon_name:"history",
-            view:true
-        }
     ]
     let usertype=[];
+    console.log(role)
     if(role === "admin"){
         usertype.push(
             ...generalPermit,
@@ -160,6 +149,18 @@ async function CreateUser(parent,{email,first_name,last_name,password,role}){
                 slug:"stock-management",
                 icon_name:"list",
                 view: true
+            },
+            {
+                name:"Cart",
+                slug:"cart-page",
+                icon_name:"shopping-cart",
+                view:false
+            },
+            {
+                name:"History",
+                slug:"history-page",
+                icon_name:"history",
+                view:true
             }
         )
     }else if(role ==="user"){
@@ -176,6 +177,18 @@ async function CreateUser(parent,{email,first_name,last_name,password,role}){
                 slug:"stock-management",
                 icon_name:"list",
                 view: false
+            },
+            {
+                name:"Cart",
+                slug:"cart-page",
+                icon_name:"shopping-cart",
+                view:true
+            },
+            {
+                name:"History",
+                slug:"history-page",
+                icon_name:"history",
+                view:true
             }
         )
     }
@@ -188,11 +201,23 @@ async function CreateUser(parent,{email,first_name,last_name,password,role}){
         role:role,
         usertype:usertype
     })
-    if(!role){
-        throw new ApolloError("role harus diisi!")
+    if(!addUser){
+        throw new ApolloError("must be filled")
     }
+    
     addUser.save()
     return addUser
+}
+
+async function ForgetPassword(parent,{email,password},context){
+    const checkEmail = await userModel.findOne({email:email})
+    // console.log(checkEmail)
+    if(checkEmail){
+        password = await bcrypt.hash(password, 5)
+        return await userModel.findByIdAndUpdate(checkEmail._id,{password:password})
+    }else{
+        throw new ApolloError("email not found")
+    }
 }
 
 //untuk update data user
@@ -229,7 +254,7 @@ function generateAccessToken(payload){
 async function login(parent,{email, password}){
     let checkUser= await userModel.findOne({email:email});
     if(!checkUser ){
-        throw new ApolloError("user tidak ditemukan atau email salah")
+        throw new ApolloError("user not found or wrong email")
     }
     password= await bcrypt.compare(password, checkUser.password)
     if(password){
@@ -246,7 +271,7 @@ async function login(parent,{email, password}){
 
         }
     }else{
-        throw new ApolloError("cek kembali email dan password ada yang salah")
+        throw new ApolloError("check again email and password there is something wrong")
     }
 }
 
@@ -260,6 +285,7 @@ const Userresolvers={
     Mutation:{
         login,
         CreateUser,
+        ForgetPassword,
         UpdateUser,
         DeleteUser
     }
