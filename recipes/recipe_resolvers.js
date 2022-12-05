@@ -269,7 +269,7 @@ async function UpdateRecipe(parent,{id,recipe_name,description,image,ingredients
         for(let ingredient of ingredients){
            const bahan = await ingModel.findById(ingredient.ingredient_id)
            if (bahan.stock < ingredient.stock_used){
-            throw new ApolloError("bahan kurang")
+            throw new ApolloError("less ingredient")
            }
         }
     }

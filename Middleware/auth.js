@@ -24,6 +24,7 @@ module.exports={
         getAllRecipes:auth,
         getOneRecipes:auth,
         getAllTransaction:auth,
+        getHistory:auth,
         getOneTransaction:auth
     },
     Mutation:{

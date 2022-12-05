@@ -104,7 +104,7 @@ async function UpdateIngredients(parent,{id,name, stock}){
 
     },{new:true})
     if(stock < 0){
-        throw new ApolloError("stock tidak bisa minus")
+        throw new ApolloError("stock can't minus")
     }
     return updateIng
 }
