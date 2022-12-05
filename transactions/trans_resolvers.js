@@ -13,9 +13,7 @@ const recipeModel = require('../recipes/recipesModel')
 //get data transaction menggunkan lookup dan dataloader
 async function getAllTransaction(parent,{page, limit,last_name_user, recipe_name,order_status,order_date},context){
     // console.log(context.loadUser)
-    let User= context.req.user_id
-    // console.log(User)
-    
+    let User= context.req.user_id    
     let queryAgg= [
         {
             $skip:(page-1)*limit
@@ -24,6 +22,13 @@ async function getAllTransaction(parent,{page, limit,last_name_user, recipe_name
             $limit:limit
         }
     ];
+    if(User.role === "user"){
+        queryAgg.unshift({
+            $match:{
+                user_id:mongoose.Types.ObjectId(User.id)
+             }
+    })
+    }
     if(last_name_user){
         // POPULATE SINI
         queryAgg.push( 
@@ -90,13 +95,6 @@ async function getAllTransaction(parent,{page, limit,last_name_user, recipe_name
             }
         )
     }
-    // if(User.role === "user"){
-    //     queryAgg.push({
-    //         $match:{
-    //             user_id:mongoose.Types.ObjectId(User.id)
-    //          }
-    // })
-    // }
     if(order_date){
         queryAgg.push(
             {
@@ -106,21 +104,6 @@ async function getAllTransaction(parent,{page, limit,last_name_user, recipe_name
             }
         )
     }
-    let success = await transModel.find({order_status:"success"})
-    const count_success = success.length
-    
-   
-    let pending = await transModel.findOne({order_status:"pending"})
-    let count_pending = 0
-    if(pending){
-        count_pending = pending.menu.length
-    }
-    // 
-
-
-    let failed = await transModel.find({order_status:"failed"})
-    const count_failed = failed.length
-    // console.log(count_failed)
 
     const count_total = await transModel.count()
     let getTrans = await transModel.aggregate(queryAgg)
@@ -128,11 +111,145 @@ async function getAllTransaction(parent,{page, limit,last_name_user, recipe_name
         el.id = mongoose.Types.ObjectId(el._id)
             return el
        })
+       const pending_order = getTrans.filter((item)=> item.order_status ==="pending").length
+    //    console.log(pending_order)
+       const success_order = getTrans.filter((item)=> item.order_status ==="success").length
+       const failed_order = getTrans.filter((item)=> item.order_status === "failed").length
        getTrans = {
         data_transaction: getTrans,
-        count_pending:count_pending,
-        count_success:count_success,
-        count_failed:count_failed,
+        count_pending:pending_order,
+        count_success:success_order,
+        count_failed:failed_order,
+        count_total:count_total,
+        page: page,
+        // maxe_page_pending:Math.ceil(count_pending/limit),
+        max_page:  Math.ceil( count_total / limit),
+        
+        };
+      
+    return getTrans
+
+    // const getTrans= await transModel.find()
+    // return getTrans
+   
+}
+
+async function getHistory(parent,{page, limit,last_name_user, recipe_name,order_status,order_date},context){
+    // console.log(context.loadUser)
+    let User= context.req.user_id    
+    let queryAgg= [
+        {
+            $match:{
+                order_status:{
+                    $ne:"pending"
+                }
+            }
+        },
+        {
+            $skip:(page-1)*limit
+        },
+        {
+            $limit:limit
+        }
+    ];
+    if(User.role === "user"){
+        queryAgg.unshift({
+            $match:{
+                user_id:mongoose.Types.ObjectId(User.id)
+             }
+    })
+    }
+    if(last_name_user){
+        // POPULATE SINI
+        queryAgg.push( 
+            {
+            $lookup:{
+                from:"users",
+                localField:"user_id",
+                foreignField:"_id",
+                as:"user_populate"
+            },
+            
+        },
+        {
+            $match:{
+                "user_populate.last_name": RegExp(last_name_user,"i")
+            }
+            
+        } ,
+        )
+    }
+    if(recipe_name){
+        queryAgg.push(
+            {
+                $lookup:{
+                    from:"recipes",
+                    localField:"menu.recipe_id",
+                    foreignField:"_id",
+                    as:"recipe_populate"
+                }
+            },
+            {
+                $match:{
+                    "recipe_populate.recipe_name":recipe_name
+                }
+            }
+        )
+    }
+    if(order_status=="success"){
+        queryAgg.unshift(
+            {
+                $match:{
+                    order_status:"success"
+                }
+            }
+        )
+        
+    }
+    if(order_status ==="pending"){
+        queryAgg.unshift(
+            {
+                $match:{
+                    order_status:"pending",
+                    status:"active"
+                }
+            }
+        )
+    }
+    if(order_status ==="failed"){
+        queryAgg.unshift(
+            {
+                $match:{
+                    order_status:"failed"
+                }
+            }
+        )
+    }
+    if(order_date){
+        queryAgg.push(
+            {
+                $match:{
+                    order_date:order_date
+                }
+            }
+        )
+    }
+
+    const count_total = await transModel.count()
+    let getTrans = await transModel.aggregate(queryAgg)
+    getTrans.map((el)=>{
+        el.id = mongoose.Types.ObjectId(el._id)
+            return el
+       })
+       const pending_order = getTrans.filter((item)=> item.order_status ==="pending").length
+    //    console.log(pending_order)
+       const success_order = getTrans.filter((item)=> item.order_status ==="success").length
+       const failed_order = getTrans.filter((item)=> item.order_status === "failed").length
+       getTrans = {
+        data_transaction: getTrans,
+        count_pending:pending_order,
+        count_success:success_order,
+        count_failed:failed_order,
         count_total:count_total,
         page: page,
         // maxe_page_pending:Math.ceil(count_pending/limit),
@@ -222,6 +339,22 @@ async function validateStockIngredient(user_id,id, menus){
     return ValidasiSuccess
 }
 
+async function balance(parent,args,context){
+    let User= context.req.user_id 
+    if(User.role === "admin"){
+        const checkAdmin = await transModel.find(
+            {
+                order_status:"success"
+            }
+        )
+        let balance = 0
+        for(el of checkAdmin){
+            balance += el.total
+        }
+        return balance
+    }
+}
+
 async function addCart(parent,{menu,order_date},context){
     let User= context.req.user_id
     const checkUser = await transModel.findOne({
@@ -251,7 +384,7 @@ async function addCart(parent,{menu,order_date},context){
         for(let status of menu){
             const checkStatus = await recipeModel.findById(status.recipe_id)
             if(checkStatus.status ==="unpublish"){
-                throw new ApolloError("menu sudah unpublish")
+                throw new ApolloError("the menu has been unpublished")
             }
         }
         let add = await transModel.findByIdAndUpdate(checkUser.id,
@@ -276,37 +409,57 @@ async function TotalRecipe(menu,args,context){
             Total_Recipe = (recipe.price *menu.amount)
             // console.log(Total_Recipe)
         }
-        if(recipe.special_offers == true){
+        if(recipe.special_offers === true){
             dicount = recipe.price *(recipe.discount/100)
             // console.log(recipe.discount/100)
             Total_Recipe = (recipe.price *menu.amount-dicount)
-            // console.log(Total_Recipe)
+            // console.log(recipe.price)
         }
     return Total_Recipe
 
 }
 
-async function getTotal({menu,amount},args,context){
+// async function getTotal({menu,amount},args,context){
+//     let total_price = 0 
+//     if(menu){
+//     for(let el of menu ){
+//         const recipe = await recipeModel.findById(el.recipe_id)        
+//         if(recipe.special_offers === true){
+//             dicount=(recipe.price)*(20/100)
+//             // console.log(dicount)
+//             total_price += (recipe.price*el.amount)-dicount
+//            return total_price
+           
+//         }
+//         if(recipe){
+//             total_price += (recipe.price *el.amount)
+//         }
+
+//     }
+// }
+//     // console.log(total_price)
+//     return total_price
+
+// }
+
+
+//function untuk menambahkan menu ke dalam add cart
+async function getTotal({menu},args,context){
     let total_price = 0 
-    if(menu){
     for(let el of menu ){
+        let total_items = await TotalRecipe(el)
         const recipe = await recipeModel.findById(el.recipe_id)
+        // console.log(recipe)
         if(recipe){
-            total_price += (recipe.price *el.amount)
-        }
-        if(recipe.special_offers == true){
-            dicount = recipe.price *(recipe.discount/100)
-            total_price = (recipe.price *el.amount)-dicount
-            console.log(total_price)
+            total_price += total_items
+            // 
         }
 
     }
+    // console.log(total_price)
+    return total_price 
 }
-    return total_price
 
-}
-
-//function untuk menambahkan menu ke dalam add cart
 async function UpdateCart(parent,{id,note},context){
     // console.log(id)
     await transModel.updateOne({
@@ -339,10 +492,10 @@ async function OrderTransaction(parent,args,context){
     // console.log(checktrans)
     if(checktrans){
         // let orderValidasi = await validateStockIngredient(User.id,id,checktrans.menu)
-        let coba = await validateStockIngredient(User.id,checktrans._id,checktrans.menu)
+        let checkValidate = await validateStockIngredient(User.id,checktrans._id,checktrans.menu)
         // console.log(coba.order_status)
         // coba.save()
-        return coba
+        return checkValidate
         // console.log( await transModel.findByIdAndUpdate(id,{coba}))
     }
 }
@@ -433,6 +586,7 @@ async function DeleteTransaction(parent,{id,status}){
 const trans_resolvers={
     Query:{
         getAllTransaction,
+        getHistory,
         getOneTransaction
     },
     Mutation:{
@@ -450,7 +604,8 @@ const trans_resolvers={
     },
     transactions:{
         user_id:loadUser,
-        total:getTotal
+        total:getTotal,
+        balanceAdmin:balance
     },
 
 
