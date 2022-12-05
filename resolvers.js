@@ -134,7 +134,6 @@ async function CreateUser(parent,{email,first_name,last_name,password,role="user
         },
     ]
     let usertype=[];
-    console.log(role)
     if(role === "admin"){
         usertype.push(
             ...generalPermit,
@@ -201,6 +200,9 @@ async function CreateUser(parent,{email,first_name,last_name,password,role="user
         role:role,
         usertype:usertype
     })
+    if(addUser.role ==="admin"){
+        saldo:0
+    }
     if(!addUser){
         throw new ApolloError("must be filled")
     }

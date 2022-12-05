@@ -353,8 +353,9 @@ async function validateStockIngredient(user_id,id, menus){
     return ValidasiSuccess
 }
 
-async function balance(parent,args,context){
+async function incomingAdmin(parent,args,context){
     let User= context.req.user_id 
+    
     if(User.role === "admin"){
         const checkAdmin = await transModel.find(
             {
@@ -365,8 +366,10 @@ async function balance(parent,args,context){
         for(el of checkAdmin){
             balance += el.total
         }
-        return balance
+        return { balanceAdmin:balance}
     }
+    // return balance
+    // return balance
 }
 
 async function addCart(parent,{menu,order_date},context){
@@ -602,7 +605,8 @@ const trans_resolvers={
     Query:{
         getAllTransaction,
         getHistory,
-        getOneTransaction
+        getOneTransaction,
+        incomingAdmin
     },
     Mutation:{
         addCart,
@@ -620,7 +624,7 @@ const trans_resolvers={
     transactions:{
         user_id:loadUser,
         total:getTotal,
-        balanceAdmin:balance
+       
     },
 
 

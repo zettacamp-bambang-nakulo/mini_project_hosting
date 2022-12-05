@@ -113,7 +113,6 @@ const typeDefs= gql`
         order_status:oder_status
         order_date:String
         total:Int
-        balanceAdmin:Int
         status:all_status
     
     }
@@ -153,6 +152,10 @@ const typeDefs= gql`
         max_page: Int
     }
 
+    type balance_admin{
+        balanceAdmin:Int
+    }
+
 
     type Query{
         getAllUser(email:String,page:Int,limit:Int):users
@@ -168,6 +171,8 @@ const typeDefs= gql`
         getAllTransaction(page:Int,limit:Int,last_name_user:String,recipe_name:String,order_status:oder_status):pagination_transactions
         getHistory(page:Int,limit:Int,last_name_user:String,recipe_name:String,order_status:oder_status):pagination_transactions
         getOneTransaction:transactions
+
+        incomingAdmin:balance_admin
     }
 
     type Mutation{
@@ -194,6 +199,7 @@ const typeDefs= gql`
         incrAmaount(menu_id:ID,amount:Int):transactions
         decrAmaount(menu_id:ID,amount:Int):transactions
         deleteCart(id:ID):transactions
+
     }
 
 `;

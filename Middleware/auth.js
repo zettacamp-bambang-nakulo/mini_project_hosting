@@ -25,7 +25,8 @@ module.exports={
         getOneRecipes:auth,
         getAllTransaction:auth,
         getHistory:auth,
-        getOneTransaction:auth
+        getOneTransaction:auth,
+        incomingAdmin:auth
     },
     Mutation:{
         UpdateUser:auth,
