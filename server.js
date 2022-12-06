@@ -37,7 +37,7 @@ const loadUser= require("./users/userLoader")
 const trans_resolvers= require("./transactions/trans_resolvers")
 
 
-mongoose.connect("mongodb://localhost/restaurant")
+mongoose.connect("mongodb+srv://bambang:zettacamp@miniproject.nqkadwu.mongodb.net/restaurans?retryWrites=true&w=majority")
 const db = mongoose.connection 
 db.on('error', console.error.bind(console, 'connection error:')); 
 db.once('open', function() { 
