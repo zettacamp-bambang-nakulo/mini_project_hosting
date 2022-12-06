@@ -135,8 +135,8 @@ async function CreateUser(parent,{email,first_name,last_name,password,role="user
         },
         {
             name:"Menu highlight & Special offer",
-            slug:"local_offer",
-            icon_name:"menu_offer",
+            slug:"menu_offer",
+            icon_name:"local_offer",
             view:true
         }
     ]
