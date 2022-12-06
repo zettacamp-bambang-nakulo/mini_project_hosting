@@ -420,20 +420,20 @@ async function addCart(parent,{menu,order_date},context){
 async function TotalRecipe(menu,args,context){
     // console.log(menu.recipe_id)
     let Total_Recipe = 0
-        const recipe = await recipeModel.findById(menu.recipe_id).lean()
-        // console.log(recipe.special_offers)
-        if (recipe){
-            Total_Recipe = (recipe.price *menu.amount)
-            // console.log(Total_Recipe)
-        }
-        if(recipe.special_offers === true){
-            dicount = recipe.price *(recipe.discount/100)
-            // console.log(recipe.discount/100)
-            Total_Recipe = (recipe.price *menu.amount-dicount)
-            // console.log(recipe.price)
-        }
-    return Total_Recipe
-
+    const recipe = await recipeModel.findById(menu.recipe_id).lean()
+    // console.log(recipe.special_offers)
+    if (recipe){
+        Total_Recipe = (recipe.price *menu.amount)
+        // console.log(Total_Recipe)
+    }
+    if(recipe.special_offers === true){
+        currentPrice = recipe.price *menu.amount;
+        dicount = currentPrice *(recipe.discount/100)
+        // console.log(recipe.discount/100)
+        Total_Recipe = (currentPrice-dicount)
+        // console.log(recipe.price)
+    }
+return Total_Recipe
 }
 
 // async function getTotal({menu,amount},args,context){
