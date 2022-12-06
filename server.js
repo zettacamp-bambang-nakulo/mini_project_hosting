@@ -5,7 +5,7 @@ const { ApolloServer, gql}= require("apollo-server");
 const mongoose= require("mongoose")
 
 //manggil data resolvers yang ada dalam file lain
-const Userresolvers= require("./resolvers")
+const Userresolvers= require("./users/resolvers")
 
 //impor ingredients resolvers
 const Ingresolvers= require("./ingredients/ingredient_resolvers")
@@ -31,13 +31,13 @@ const ingredientloaders= require("./ingredients/ingredientLoader")
 const loaderRecepi= require("./recipes/recipesLoader")
 
 //import user loader
-const loadUser= require("./userLoader")
+const loadUser= require("./users/userLoader")
 
 //import transactions
 const trans_resolvers= require("./transactions/trans_resolvers")
 
 
-mongoose.connect("mongodb+srv://bambang:zettacamp@miniproject.nqkadwu.mongodb.net/restaurans?retryWrites=true&w=majority")
+mongoose.connect("mongodb://localhost/restaurant")
 const db = mongoose.connection 
 db.on('error', console.error.bind(console, 'connection error:')); 
 db.once('open', function() { 
@@ -50,6 +50,7 @@ const resolvers= merge(
     recipeResolvers,
     trans_resolvers
 )
+
 
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 const schemaMiddleware = applyMiddleware(schema, authMiddelware, authRole)
