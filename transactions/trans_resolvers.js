@@ -4,7 +4,7 @@ const { ApolloError } = require('apollo-server-errors')
 const mongoose= require("mongoose")
 //import modul transactions
 const transModel= require("./transModel")
-const userModel=require("../userModel")
+const userModel=require("../users/userModel")
 const ingModel= require("../ingredients/ingredientsModel")
 const moment=require("moment")
 const { findByIdAndUpdate } = require('../ingredients/ingredientsModel')
@@ -417,24 +417,24 @@ async function addCart(parent,{menu,order_date},context){
 
 }
 
-async function AfterDiscount(menu,args,context){
-    // console.log(menu.recipe_id)
-    let afterDiscount = 0
-    const recipe = await recipeModel.findById(menu.recipe_id).lean()
-    // console.log(recipe.special_offers)
-    if (recipe){
-        afterDiscount = (recipe.price *menu.amount)
-        // console.log(Total_Recipe)
-    }
-    if(recipe.special_offers === true){
-        currentPrice = recipe.price *menu.amount;
-        dicount = currentPrice *(recipe.discount/100)
-        // console.log(recipe.discount/100)
-        afterDiscount = (currentPrice-dicount)
-        // console.log(recipe.price)
-    }
-return afterDiscount
-}
+// async function AfterDiscount(menu,args,context){
+//     // console.log(menu.recipe_id)
+//     let afterDiscount = 0
+//     const recipe = await recipeModel.findById(menu.recipe_id).lean()
+//     // console.log(recipe.special_offers)
+//     if (recipe){
+//         afterDiscount = (recipe.price *menu.amount)
+//         // console.log(Total_Recipe)
+//     }
+//     if(recipe.special_offers === true){
+//         currentPrice = recipe.price *menu.amount;
+//         dicount = currentPrice *(recipe.discount/100)
+//         // console.log(recipe.discount/100)
+//         afterDiscount = (currentPrice-dicount)
+//         // console.log(recipe.price)
+//     }
+// return afterDiscount
+// }
 
 async function TotalRecipe(menu,args,context){
     // console.log(menu.recipe_id)
@@ -638,7 +638,6 @@ const trans_resolvers={
     },
     trans_menu:{
         recipe_id:loadingredient,
-        affter_discount:AfterDiscount,
         total_recipe:TotalRecipe
     },
     transactions:{
