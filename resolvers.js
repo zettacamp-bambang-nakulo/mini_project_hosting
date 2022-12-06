@@ -121,6 +121,12 @@ async function CreateUser(parent,{email,first_name,last_name,password,role="user
     }
     let generalPermit= [
         {
+            name:"Menu highlight & Special offer",
+            slug:"menu_offer",
+            icon_name:"local_offer",
+            view:true
+        },
+        {
             name:"Menu",
             slug:"menu-page",
             icon_name:"restaurant-menu",
@@ -132,12 +138,6 @@ async function CreateUser(parent,{email,first_name,last_name,password,role="user
             icon_name:"info",
             view: false
 
-        },
-        {
-            name:"Menu highlight & Special offer",
-            slug:"menu_offer",
-            icon_name:"local_offer",
-            view:true
         }
     ]
     let usertype=[];
