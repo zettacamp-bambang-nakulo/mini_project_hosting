@@ -122,6 +122,7 @@ const typeDefs= gql`
         recipe_id:recipes
         amount:Int
         note:String
+        affter_discount:Int
         total_recipe:Int
     }
 
