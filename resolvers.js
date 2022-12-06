@@ -103,12 +103,13 @@ async function getOneUser(parent,{id, email}){
         const checkUser =await userModel.find({_id:mongoose.Types.ObjectId(id)})
         return checkUser
 
-    }else{
-        const checkEmail= await userModel.find({
-            email:email
-        })
+    }if(email) {
+        const checkEmail= await userModel.find({email:email})
+        if(checkEmail.length < 1){
+            throw new ApolloError("email not found")
+        }
 
-        return  checkEmail
+        return checkEmail
     }
 }
 
