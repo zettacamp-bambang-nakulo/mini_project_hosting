@@ -18,7 +18,7 @@ async function auth (resolve, parent, args, context, info){
 module.exports={
     Query:{
         getAllUser:auth,
-//         getOneUser:auth,
+        // getOneUser:auth,
         getAllIngredients:auth,
         getOneIngredients:auth,
         getAllRecipes:auth,

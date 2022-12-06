@@ -1,5 +1,5 @@
 const { ApolloError } = require('apollo-server-errors')
-const { Mutation } = require('../resolvers')
+const { Mutation } = require('../users/resolvers')
 
 
 async function authRole (resolve, parent, args, context, info){
