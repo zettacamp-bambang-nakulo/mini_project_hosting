@@ -252,6 +252,18 @@ async function CreateRecipes(parent,{recipe_name,description,image,ingredients,s
 
 }
 
+async function AfterDiscount(parent,args,context){
+    // console.log(parent)
+    if(parent.special_offers === true){
+        const dis = parent.price*(parent.discount/100)
+        let afterdiscount = parent.price - dis
+        return afterdiscount
+    }else{
+        return 0
+    }
+}
+
+
 //untuk mealukan updating pada recepies dengan mengganti id ingredients atau ganti nama,dll
 async function UpdateRecipe(parent,{id,recipe_name,description,image,ingredients,price,status,menu_highlight,special_offers,discount}){
     const UpdRecipe= await recipeModel.findByIdAndUpdate(id,{
@@ -303,7 +315,8 @@ const recipeResolvers={
         ingredient_id:loadingredient
     },
     recipes:{
-        available: getAvailable
+        available: getAvailable,
+        afterDiscount:AfterDiscount
     }
 }
 
