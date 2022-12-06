@@ -87,6 +87,7 @@ const typeDefs= gql`
         menu_highlight:Boolean
         special_offers:Boolean
         discount:Int
+        afterDiscount:Int
 
     }
     
@@ -122,7 +123,6 @@ const typeDefs= gql`
         recipe_id:recipes
         amount:Int
         note:String
-        affter_discount:Int
         total_recipe:Int
     }
 
