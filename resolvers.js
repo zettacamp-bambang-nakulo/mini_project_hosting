@@ -133,6 +133,12 @@ async function CreateUser(parent,{email,first_name,last_name,password,role="user
             view: false
 
         },
+        {
+            name:"Menu highlight & Special offer",
+            slug:"local_offer",
+            icon_name:"menu_offer",
+            view:true
+        }
     ]
     let usertype=[];
     if(role === "admin"){
