@@ -43,7 +43,7 @@ async function getAllRecipes(parent,{page, limit,recipe_name, menu_highlight,sta
     ]
 
     if(recipe_name){
-        queryAgg.push(
+        queryAgg.unshift(
             {
                 $match:{
                     recipe_name:new RegExp(recipe_name,"i")
