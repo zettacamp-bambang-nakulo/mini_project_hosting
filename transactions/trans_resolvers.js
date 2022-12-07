@@ -481,6 +481,9 @@ return Total_Recipe
 
 //function untuk menambahkan menu ke dalam add cart
 async function getTotal({menu},args,context){
+    if(!menu){
+        return null
+    }
     let total_price = 0 
     for(let el of menu ){
         let total_items = await TotalRecipe(el)
@@ -610,13 +613,24 @@ async function deleteCart(parent,{id},context){
 }
 
 //functions untuk mendelete transactions
-async function DeleteTransaction(parent,{id,status}){
-    let delTrans= await transModel.findByIdAndUpdate(id,{
-        $set:{
-            status:"deleted"
-        }
-    },{new:true})
-    return delTrans
+async function DeleteTransaction(parent,args,context){
+    let delTrans= await transModel.updateMany(
+            {
+                status:"active"
+            },
+            {
+                $set: {
+                    status:"deleted"
+                }
+            },{new:true})
+    // console.log("helo delete trans")
+    // let delTrans = await transModel.find(
+    //     {
+    //         status:"active"
+    //     }
+    //     )\
+
+    return await transModel.find({status:"deleted"})
 }
     
 
