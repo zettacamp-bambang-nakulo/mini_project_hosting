@@ -31,7 +31,7 @@ async function getAllTransaction(parent,{page, limit,last_name_user, recipe_name
     }
     if(last_name_user){
         // POPULATE SINI
-        queryAgg.push( 
+        queryAgg.unshift( 
             {
             $lookup:{
                 from:"users",
