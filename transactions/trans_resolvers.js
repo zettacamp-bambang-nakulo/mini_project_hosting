@@ -143,7 +143,7 @@ async function getHistory(parent,{page, limit,last_name_user, recipe_name,order_
     const count_total = await transModel.count() 
     let queryAgg= [];
     if(!order_status){
-        queryAgg.push(
+        queryAgg.unshift(
             {
                 $match:{
                     order_status:{
