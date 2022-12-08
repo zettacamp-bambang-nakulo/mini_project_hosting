@@ -423,10 +423,6 @@ async function addCart(parent,{menu,order_date},context){
                 throw new ApolloError("the menu has been unpublished")
             }
         }
-        const checkmenu = await transModel.find(menu.recipe_id)
-        if(checkmenu.length > 0){
-            throw new ApolloError("menu sudah ada")
-        }
         let add = await transModel.findByIdAndUpdate(checkUser.id,
             {
                 $push:{
