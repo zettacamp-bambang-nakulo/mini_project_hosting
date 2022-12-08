@@ -284,7 +284,7 @@ async function UpdateRecipe(parent,{id,recipe_name,description,image,ingredients
             throw new ApolloError("less ingredient")
            }
            const checkingredient= await ingModel.findOne({ingredients:ingredients})
-           if(checkingredient){
+           if(checkingredient.length){
             throw new ApolloError("ingredient has been used")
            }
         }
