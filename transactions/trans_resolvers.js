@@ -138,13 +138,12 @@ async function getHistory(parent,{page, limit,last_name_user, recipe_name,order_
     // console.log(context.loadUser)
     let User= context.req.user_id    
     let queryAgg= [
-        {
-            $skip:(page-1)*limit
-        },
-        {
-            $limit:limit
-        }
-    ];
+    {
+        $skip:(page-1)*limit
+    },
+    {
+        $limit:limit
+    }];
     if(User.role === "user"){
         queryAgg.unshift({
             $match:{
@@ -203,8 +202,7 @@ async function getHistory(parent,{page, limit,last_name_user, recipe_name,order_
         queryAgg.unshift(
             {
                 $match:{
-                    order_status:"pending",
-                    status:"active"
+                    order_status:"pending"
                 }
             }
         )
@@ -234,9 +232,9 @@ async function getHistory(parent,{page, limit,last_name_user, recipe_name,order_
         el.id = mongoose.Types.ObjectId(el._id)
             return el
        })
-       const pending_order = getTrans.filter((item)=> item.order_status ==="pending").length
+       const pending_order = getTrans.filter((item)=> item.order_status === "pending").length
     //    console.log(pending_order)
-       const success_order = getTrans.filter((item)=> item.order_status ==="success").length
+       const success_order = getTrans.filter((item)=> item.order_status === "success").length
        const failed_order = getTrans.filter((item)=> item.order_status === "failed").length
        getTrans = {
         data_transaction: getTrans,
@@ -249,7 +247,7 @@ async function getHistory(parent,{page, limit,last_name_user, recipe_name,order_
         max_page:  Math.ceil( count_total / limit),
         
         };
-      
+    // console.log(JSON.stringify(queryAgg))
     return getTrans
 
     // const getTrans= await transModel.find()
