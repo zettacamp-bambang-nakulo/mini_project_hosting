@@ -226,7 +226,7 @@ async function getHistory(parent,{page, limit,last_name_user, recipe_name,order_
         )
     }
     if(order_date){
-        queryAgg.push(
+        queryAgg.unshift(
             {
                 $match:{
                     order_date:order_date
