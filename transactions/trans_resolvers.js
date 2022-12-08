@@ -136,14 +136,41 @@ async function getAllTransaction(parent,{page, limit,last_name_user, recipe_name
 
 async function getHistory(parent,{page, limit,last_name_user, recipe_name,order_status,order_date},context){
     // console.log(context.loadUser)
-    let User= context.req.user_id    
-    let queryAgg= [
-    {
-        $skip:(page-1)*limit
-    },
-    {
-        $limit:limit
-    }];
+    let User= context.req.user_id  
+    const count_pending = await transModel.find({order_status:"pending"})
+    const count_success = await transModel.find({order_status:"success"})
+    const count_failed = await transModel.find({order_status:"failed"})
+    const count_total = await transModel.count() 
+    let queryAgg= [];
+    if(!order_status){
+        queryAgg.push(
+            {
+                $match:{
+                    order_status:{
+                        $ne:"pending"
+                    }
+                }
+            }
+        )
+    } else{
+        queryAgg.push(
+            {
+                $match:{
+                    order_status:order_status
+                }
+            }
+        )
+    }
+    if(page){
+        queryAgg.unshift(
+            {
+                $skip:(page-1)*limit
+            },
+            {
+                $limit:limit
+            } 
+        )
+    }
     if(User.role === "user"){
         queryAgg.unshift({
             $match:{
@@ -188,34 +215,34 @@ async function getHistory(parent,{page, limit,last_name_user, recipe_name,order_
             }
         )
     }
-    if(order_status=="success"){
-        queryAgg.unshift(
-            {
-                $match:{
-                    order_status:"success"
-                }
-            }
-        )
+    // if(order_status=="success"){
+    //     queryAgg.unshift(
+    //         {
+    //             $match:{
+    //                 order_status:"success"
+    //             }
+    //         }
+    //     )
         
-    }
-    if(order_status ==="pending"){
-        queryAgg.unshift(
-            {
-                $match:{
-                    order_status:"pending"
-                }
-            }
-        )
-    }
-    if(order_status ==="failed"){
-        queryAgg.unshift(
-            {
-                $match:{
-                    order_status:"failed"
-                }
-            }
-        )
-    }
+    // }
+    // if(order_status ==="pending"){
+    //     queryAgg.unshift(
+    //         {
+    //             $match:{
+    //                 order_status:"pending"
+    //             }
+    //         }
+    //     )
+    // }
+    // if(order_status ==="failed"){
+    //     queryAgg.unshift(
+    //         {
+    //             $match:{
+    //                 order_status:"failed"
+    //             }
+    //         }
+    //     )
+    // }
     if(order_date){
         queryAgg.unshift(
             {
@@ -225,22 +252,16 @@ async function getHistory(parent,{page, limit,last_name_user, recipe_name,order_
             }
         )
     }
-
-    const count_total = await transModel.count()
     let getTrans = await transModel.aggregate(queryAgg)
     getTrans.map((el)=>{
         el.id = mongoose.Types.ObjectId(el._id)
             return el
        })
-       const pending_order = getTrans.filter((item)=> item.order_status === "pending").length
-    //    console.log(pending_order)
-       const success_order = getTrans.filter((item)=> item.order_status === "success").length
-       const failed_order = getTrans.filter((item)=> item.order_status === "failed").length
        getTrans = {
         data_transaction: getTrans,
-        count_pending:pending_order,
-        count_success:success_order,
-        count_failed:failed_order,
+        count_pending:count_pending.length,
+        count_success:count_success.length,
+        count_failed:count_failed.length,
         count_total:count_total,
         page: page,
         // maxe_page_pending:Math.ceil(count_pending/limit),
