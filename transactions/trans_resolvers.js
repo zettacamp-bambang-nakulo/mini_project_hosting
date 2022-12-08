@@ -142,6 +142,16 @@ async function getHistory(parent,{page, limit,last_name_user, recipe_name,order_
     const count_failed = await transModel.find({order_status:"failed"})
     const count_total = await transModel.count() 
     let queryAgg= [];
+    if(page){
+        queryAgg.unshift(
+            {
+                $skip:(page-1)*limit
+            },
+            {
+                $limit:limit
+            } 
+        )
+    }
     if(!order_status){
         queryAgg.unshift(
             {
@@ -152,23 +162,13 @@ async function getHistory(parent,{page, limit,last_name_user, recipe_name,order_
                 }
             }
         )
-    } else{
+    }else{
         queryAgg.unshift(
             {
                 $match:{
                     order_status:order_status
                 }
             }
-        )
-    }
-    if(page){
-        queryAgg.unshift(
-            {
-                $skip:(page-1)*limit
-            },
-            {
-                $limit:limit
-            } 
         )
     }
     if(User.role === "user"){
