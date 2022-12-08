@@ -153,7 +153,7 @@ async function getHistory(parent,{page, limit,last_name_user, recipe_name,order_
             }
         )
     } else{
-        queryAgg.push(
+        queryAgg.unshift(
             {
                 $match:{
                     order_status:order_status
