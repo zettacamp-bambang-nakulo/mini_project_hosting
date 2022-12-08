@@ -9,6 +9,10 @@ const { ApolloError } = require('apollo-server-errors')
 //-------------------------------------------collection ingredients-----------------------------------------------------//
 // create ingredients
 async function CreateIngredints(parent,{name,stock}){
+    const namaIng = await ingModel.findOne({name:name})
+    if(namaIng){
+        throw new ApolloError("ingredient already exists")
+    }
     let addIngredint = await new ingModel({
         name:name,
         stock:stock
