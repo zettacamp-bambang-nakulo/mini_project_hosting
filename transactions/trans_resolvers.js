@@ -329,9 +329,9 @@ async function validateStockIngredient(user_id,id, menus){
      const ingredientMap=[]
      let total = 0
      for (let recipe of transaction_menu.menu){
+        if(recipe.amount > recipe.recipe_id.available ){throw new ApolloError("not order now")}
         if(recipe.recipe_id.status ==="unpublish")throw new ApolloError("menu is unpublish not order now")
         if( recipe.recipe_id.status === "deleted") throw new ApolloError("status deleted")
-        if(recipe.amount => recipe.recipe_id.available ){throw new ApolloError("not order now")}
         const amount= recipe.amount
         const price = recipe.recipe_id.price
         total += price*amount
