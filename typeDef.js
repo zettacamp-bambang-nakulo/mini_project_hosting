@@ -193,7 +193,7 @@ const typeDefs= gql`
         DeleteRecipe(id:ID):recipes
 
         addCart(menu:[trans_menuInput]): transactions
-        DeleteTransaction(id:ID):transactions
+        DeleteTransaction:transactions
 
         UpdateCart(id:ID,note:String):transactions
         OrderTransaction:transactions
