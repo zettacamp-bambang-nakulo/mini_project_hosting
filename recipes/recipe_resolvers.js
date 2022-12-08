@@ -283,10 +283,6 @@ async function UpdateRecipe(parent,{id,recipe_name,description,image,ingredients
            if (bahan.stock < ingredient.stock_used){
             throw new ApolloError("less ingredient")
            }
-           const checkingredient= await ingModel.findOne({ingredients:ingredients})
-           if(checkingredient.length > 1){
-            throw new ApolloError("ingredient has been used")
-           }
         }
     }
     return UpdRecipe
