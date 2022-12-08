@@ -416,7 +416,7 @@ async function addCart(parent,{menu,order_date},context){
             if(checkStatus.status ==="unpublish"){
                 throw new ApolloError("the menu has been unpublished")
             }
-            if(checkStatus){
+            if(checkStatus > 1){
                 throw new ApolloError("menu sudah dipesan")
             }
         }
