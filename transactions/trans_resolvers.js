@@ -9,6 +9,7 @@ const ingModel= require("../ingredients/ingredientsModel")
 const moment=require("moment")
 const { findByIdAndUpdate } = require('../ingredients/ingredientsModel')
 const recipeModel = require('../recipes/recipesModel')
+const { get } = require('lodash')
 
 //get data transaction menggunkan lookup dan dataloader
 async function getAllTransaction(parent,{page, limit,last_name_user, recipe_name,order_status,order_date},context){
@@ -172,7 +173,7 @@ async function getHistory(parent,{page, limit,last_name_user, recipe_name,order_
         )
     }
     if(User.role === "user"){
-        queryAgg.unshift({
+        queryAgg.push({
             $match:{
                 user_id:mongoose.Types.ObjectId(User.id)
              }
@@ -302,7 +303,7 @@ async function getOneTransaction(parent,args,context){
     try{
             let User= context.req.user_id
             const getOneTrans = await transModel.findOne({order_status:"pending", user_id:User.id})
-            console.log(getOneTrans)
+            // console.log(getOneTrans)
             return getOneTrans 
         
     }catch(err){
@@ -341,7 +342,7 @@ async function validateStockIngredient(user_id,id, menus){
             });
             if( ingredient.ingredient_id.stock < (ingredient.stock_used*amount)){
                 let Validasifailed =  await transModel.findByIdAndUpdate(id,{user_id,menu:menus,order_status:"failed"},{new:true})
-                if(Validasifailed.order_status ==="failed")throw new ApolloError("amount lebih dari availble")
+                if(Validasifailed.order_status ==="failed")throw new ApolloError("order is failed")
                 return Validasifailed
                 
             }
@@ -359,6 +360,11 @@ async function validateStockIngredient(user_id,id, menus){
         if(user.saldo < total || user.saldo < 0){
             throw new ApolloError("less balance")
         }
+    
+    // const test = await transModel.findOne({menu:menus.amount})
+    // if(test > available){
+    //     throw new ApolloError("error cok")
+    // }
     
      const ValidasiSuccess = await transModel.findByIdAndUpdate(id,{menu:menus, total:total,order_status:"success"},{new:true})
      reduceingredientStock(ingredientMap);
@@ -416,9 +422,10 @@ async function addCart(parent,{menu,order_date},context){
             if(checkStatus.status ==="unpublish"){
                 throw new ApolloError("the menu has been unpublished")
             }
-            if(checkStatus > 0){
-                throw new ApolloError("menu sudah dipesan")
-            }
+        }
+        const checkmenu = await transModel.find(menu.recipe_id)
+        if(checkmenu.length > 0){
+            throw new ApolloError("menu sudah ada")
         }
         let add = await transModel.findByIdAndUpdate(checkUser.id,
             {
@@ -432,25 +439,6 @@ async function addCart(parent,{menu,order_date},context){
     }
 
 }
-
-// async function AfterDiscount(menu,args,context){
-//     // console.log(menu.recipe_id)
-//     let afterDiscount = 0
-//     const recipe = await recipeModel.findById(menu.recipe_id).lean()
-//     // console.log(recipe.special_offers)
-//     if (recipe){
-//         afterDiscount = (recipe.price *menu.amount)
-//         // console.log(Total_Recipe)
-//     }
-//     if(recipe.special_offers === true){
-//         currentPrice = recipe.price *menu.amount;
-//         dicount = currentPrice *(recipe.discount/100)
-//         // console.log(recipe.discount/100)
-//         afterDiscount = (currentPrice-dicount)
-//         // console.log(recipe.price)
-//     }
-// return afterDiscount
-// }
 
 async function TotalRecipe(menu,args,context){
     // console.log(menu.recipe_id)
@@ -470,30 +458,6 @@ async function TotalRecipe(menu,args,context){
     }
 return Total_Recipe
 }
-
-// async function getTotal({menu,amount},args,context){
-//     let total_price = 0 
-//     if(menu){
-//     for(let el of menu ){
-//         const recipe = await recipeModel.findById(el.recipe_id)        
-//         if(recipe.special_offers === true){
-//             dicount=(recipe.price)*(20/100)
-//             // console.log(dicount)
-//             total_price += (recipe.price*el.amount)-dicount
-//            return total_price
-           
-//         }
-//         if(recipe){
-//             total_price += (recipe.price *el.amount)
-//         }
-
-//     }
-// }
-//     // console.log(total_price)
-//     return total_price
-
-// }
-
 
 //function untuk menambahkan menu ke dalam add cart
 async function getTotal({menu},args,context){
@@ -531,7 +495,7 @@ async function UpdateCart(parent,{id,note},context){
 }
 //function untuk melakukan transaksi keseluruhannya
 async function OrderTransaction(parent,args,context){
-    console.log(context.user)
+    // console.log(context.user)
     let User= context.req.user_id
     const checktrans = await transModel.findOne(
         {
