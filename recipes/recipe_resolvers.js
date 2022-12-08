@@ -231,10 +231,10 @@ async function getOneRecipes(parent,{id}){
 
 //untuk membuat create recipes
 async function CreateRecipes(parent,{recipe_name,description,image,ingredients,stock_used,price,status,menu_highlight,special_offers,discount}){
-//    for(let bahan of ingredients){
-//     const checkBahan = await ingModel.findById(bahan.ingredient_id)
-//     if(checkBahan.status === "deleted")throw new ApolloError("bahan tidak bisa digunakan")
-//    }
+    const checkname= await recipeModel.findOne({recipe_name:recipe_name})
+    if(checkname){
+        throw new ApolloError("the name recipe already exists")
+    }
         const addrecipes= await new recipeModel({
          recipe_name:recipe_name,
          description:description,
@@ -282,6 +282,10 @@ async function UpdateRecipe(parent,{id,recipe_name,description,image,ingredients
            const bahan = await ingModel.findById(ingredient.ingredient_id)
            if (bahan.stock < ingredient.stock_used){
             throw new ApolloError("less ingredient")
+           }
+           const checkingredient= await ingModel.findOne({ingredients:ingredients})
+           if(checkingredient){
+            throw new ApolloError("ingredient has been used")
            }
         }
     }
