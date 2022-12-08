@@ -329,7 +329,6 @@ async function validateStockIngredient(user_id,id, menus){
      const ingredientMap=[]
      let total = 0
      for (let recipe of transaction_menu.menu){
-        if(recipe.amount > recipe.recipe_id.available ){throw new ApolloError("not order now")}
         if(recipe.recipe_id.status ==="unpublish")throw new ApolloError("menu is unpublish not order now")
         if( recipe.recipe_id.status === "deleted") throw new ApolloError("status deleted")
         const amount= recipe.amount
@@ -342,6 +341,7 @@ async function validateStockIngredient(user_id,id, menus){
             });
             if( ingredient.ingredient_id.stock < (ingredient.stock_used*amount)){
                 let Validasifailed =  await transModel.findByIdAndUpdate(id,{user_id,menu:menus,order_status:"failed"},{new:true})
+                if(Validasifailed.order_status ==="failed")throw new ApolloError("amount lebih dari availble")
                 return Validasifailed
                 
             }
