@@ -31,7 +31,7 @@ async function getAllTransaction(parent,{page, limit,last_name_user, recipe_name
     }
     if(last_name_user){
         // POPULATE SINI
-        queryAgg.unshift( 
+        queryAgg.push( 
             {
             $lookup:{
                 from:"users",
@@ -161,7 +161,7 @@ async function getHistory(parent,{page, limit,last_name_user, recipe_name,order_
     }
     if(last_name_user){
         // POPULATE SINI
-        queryAgg.push( 
+        queryAgg.unshift( 
             {
             $lookup:{
                 from:"users",
@@ -529,14 +529,9 @@ async function OrderTransaction(parent,args,context){
             ]
         }
     )
-    // console.log(checktrans)
     if(checktrans){
-        // let orderValidasi = await validateStockIngredient(User.id,id,checktrans.menu)
         let checkValidate = await validateStockIngredient(User.id,checktrans._id,checktrans.menu)
-        // console.log(coba.order_status)
-        // coba.save()
         return checkValidate
-        // console.log( await transModel.findByIdAndUpdate(id,{coba}))
     }
 }
 
