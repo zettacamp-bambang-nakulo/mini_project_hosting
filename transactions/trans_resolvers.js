@@ -139,13 +139,6 @@ async function getHistory(parent,{page, limit,last_name_user, recipe_name,order_
     let User= context.req.user_id    
     let queryAgg= [
         {
-            $match:{
-                order_status:{
-                    $ne:"pending"
-                }
-            }
-        },
-        {
             $skip:(page-1)*limit
         },
         {
