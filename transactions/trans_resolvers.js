@@ -14,7 +14,10 @@ const { get } = require('lodash')
 //get data transaction menggunkan lookup dan dataloader
 async function getAllTransaction(parent,{page, limit,last_name_user, recipe_name,order_status,order_date},context){
     // console.log(context.loadUser)
-    let User= context.req.user_id    
+    let User= context.req.user_id  
+    const pending_order = getTrans.filter((item)=> item.order_status ==="pending").length
+    const success_order = getTrans.filter((item)=> item.order_status ==="success").length
+    const failed_order = getTrans.filter((item)=> item.order_status === "failed").length  
     let queryAgg= [
         {
             $skip:(page-1)*limit
@@ -112,10 +115,6 @@ async function getAllTransaction(parent,{page, limit,last_name_user, recipe_name
         el.id = mongoose.Types.ObjectId(el._id)
             return el
        })
-       const pending_order = getTrans.filter((item)=> item.order_status ==="pending").length
-    //    console.log(pending_order)
-       const success_order = getTrans.filter((item)=> item.order_status ==="success").length
-       const failed_order = getTrans.filter((item)=> item.order_status === "failed").length
        getTrans = {
         data_transaction: getTrans,
         count_pending:pending_order,
@@ -327,6 +326,7 @@ async function validateStockIngredient(user_id,id, menus){
             path: "ingredients.ingredient_id"
         }
      })
+
      const ingredientMap=[]
      let total = 0
      for (let recipe of transaction_menu.menu){
@@ -349,6 +349,10 @@ async function validateStockIngredient(user_id,id, menus){
             
         }
     }
+   
+    //  if(transaction_menu.amount > available){
+    //      throw new ApolloError(" amount lebih dari avaible")
+    //  }
     let total_all = await getTotal({menu:menus})
     await userModel.updateOne({_id:user_id},
         {
@@ -361,10 +365,6 @@ async function validateStockIngredient(user_id,id, menus){
             throw new ApolloError("less balance")
         }
     
-    // const test = await transModel.findOne({menu:menus.amount})
-    // if(test > available){
-    //     throw new ApolloError("error cok")
-    // }
     
      const ValidasiSuccess = await transModel.findByIdAndUpdate(id,{menu:menus, total:total,order_status:"success"},{new:true})
      reduceingredientStock(ingredientMap);
@@ -392,7 +392,6 @@ async function incomingAdmin(parent,args,context){
 }
 
 async function addCart(parent,{menu,order_date},context){
-    console.log(menu)
     let User= context.req.user_id
     const checkTransacation = await transModel.findOne({
         $and:[
@@ -428,7 +427,7 @@ async function addCart(parent,{menu,order_date},context){
         )
         console.log(add)
         if(add.length > 0){
-            throw new ApolloError("menus already exist")
+            throw new ApolloError("menu sudah ada")
         }
         for(let status of menu){
             const checkStatus = await recipeModel.findById(status.recipe_id)
