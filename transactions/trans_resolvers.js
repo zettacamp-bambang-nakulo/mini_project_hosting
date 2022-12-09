@@ -368,7 +368,7 @@ async function validateStockIngredient(user_id,id, menus){
             }
         }
         )
-        if(user.saldo < total_all ){
+        if(user.saldo =< total_all ){
             throw new ApolloError("less balance")
         }
         if(user.saldo < 0){
