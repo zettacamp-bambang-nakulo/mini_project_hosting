@@ -14,10 +14,7 @@ const { get } = require('lodash')
 //get data transaction menggunkan lookup dan dataloader
 async function getAllTransaction(parent,{page, limit,last_name_user, recipe_name,order_status,order_date},context){
     // console.log(context.loadUser)
-    let User= context.req.user_id  
-    const pending_order = getTrans.filter((item)=> item.order_status ==="pending").length
-    const success_order = getTrans.filter((item)=> item.order_status ==="success").length
-    const failed_order = getTrans.filter((item)=> item.order_status === "failed").length  
+    let User= context.req.user_id    
     let queryAgg= [
         {
             $skip:(page-1)*limit
@@ -115,6 +112,10 @@ async function getAllTransaction(parent,{page, limit,last_name_user, recipe_name
         el.id = mongoose.Types.ObjectId(el._id)
             return el
        })
+       const pending_order = getTrans.filter((item)=> item.order_status ==="pending").length
+    //    console.log(pending_order)
+       const success_order = getTrans.filter((item)=> item.order_status ==="success").length
+       const failed_order = getTrans.filter((item)=> item.order_status === "failed").length
        getTrans = {
         data_transaction: getTrans,
         count_pending:pending_order,
@@ -518,7 +519,7 @@ async function OrderTransaction(parent,args,context){
         }
     )
     if(checktrans){
-        let checkValidate = await validateStockIngredient(User.id,checktrans._id,checktrans.menu)
+        let checkValidate = await validateStockIngredient(User.id,checktrans._id,checktrans.menu,order_date = moment(new Date).format("LLLL"))
         return checkValidate
     }
 }
