@@ -361,6 +361,9 @@ async function validateStockIngredient(user_id,id, menus){
     //      throw new ApolloError(" amount lebih dari avaible")
     //  }
     let total_all = await getTotal({menu:menus})
+    if(user.saldo < total_all ){
+        throw new ApolloError("less balance")
+    }
     await userModel.updateOne({_id:user_id},
         {
             $set:{
@@ -368,11 +371,8 @@ async function validateStockIngredient(user_id,id, menus){
             }
         }
         )
-        if(user.saldo < total_all ){
-            throw new ApolloError("less balance")
-        }
         if(user.saldo < 0){
-            throw new ApolloError("kurang")
+            throw new ApolloError("kurang duwit")
         }
     
      const ValidasiSuccess = await transModel.findByIdAndUpdate(id,{menu:menus, total:total,order_status:"success"},{new:true})
