@@ -368,10 +368,12 @@ async function validateStockIngredient(user_id,id, menus){
             }
         }
         )
-        if(user.saldo < total_all || user.saldo < 0){
+        if(user.saldo < total_all ){
             throw new ApolloError("less balance")
         }
-    
+        if(user.saldo < 0){
+            throw new ApolloError("kurang")
+        }
     
      const ValidasiSuccess = await transModel.findByIdAndUpdate(id,{menu:menus, total:total,order_status:"success"},{new:true})
      reduceingredientStock(ingredientMap);
