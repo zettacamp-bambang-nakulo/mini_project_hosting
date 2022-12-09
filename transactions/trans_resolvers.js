@@ -428,7 +428,7 @@ async function addCart(parent,{menu,order_date},context){
         )
         console.log(add)
         if(add.length > 0){
-            throw new ApolloError("menu sudah ada")
+            throw new ApolloError("menus already exist")
         }
         for(let status of menu){
             const checkStatus = await recipeModel.findById(status.recipe_id)
