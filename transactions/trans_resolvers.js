@@ -407,7 +407,7 @@ async function addCart(parent,{menu,order_date},context){
     })
     // console.log(check)
     if(!checkTransacation){
-        order_date = moment(new Date).format("LLLL")
+        order_date = moment(new Date).format("LL")
         const addmenu= await new transModel({
             user_id:User.id,
             menu:menu,
@@ -520,7 +520,7 @@ async function OrderTransaction(parent,args,context){
         }
     )
     if(checktrans){
-        let checkValidate = await validateStockIngredient(User.id,checktrans._id,checktrans.menu,order_date = moment(new Date).format("LLLL"))
+        let checkValidate = await validateStockIngredient(User.id,checktrans._id,checktrans.menu,order_date = moment(new Date).format("LL"))
         return checkValidate
     }
 }
