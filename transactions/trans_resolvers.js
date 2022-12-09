@@ -27,7 +27,12 @@ async function getAllTransaction(parent,{page, limit,last_name_user, recipe_name
             },
             {
                 $limit:limit
-            } 
+            },
+            {
+                $sort :{
+                    order_date:-1
+                }
+            }
         )
     }
     if(User.role === "user"){
@@ -363,7 +368,7 @@ async function validateStockIngredient(user_id,id, menus){
             }
         }
         )
-        if(user.saldo < total || user.saldo < 0){
+        if(user.saldo < total_all || user.saldo < 0){
             throw new ApolloError("less balance")
         }
     
