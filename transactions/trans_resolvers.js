@@ -392,8 +392,9 @@ async function incomingAdmin(parent,args,context){
 }
 
 async function addCart(parent,{menu,order_date},context){
+    console.log(menu)
     let User= context.req.user_id
-    const checkUser = await transModel.findOne({
+    const checkTransacation = await transModel.findOne({
         $and:[
             {
                 order_status:"pending"
@@ -404,7 +405,7 @@ async function addCart(parent,{menu,order_date},context){
         ]
     })
     // console.log(check)
-    if(!checkUser){
+    if(!checkTransacation){
         order_date = moment(new Date).format("LLLL")
         const addmenu= await new transModel({
             user_id:User.id,
@@ -417,13 +418,25 @@ async function addCart(parent,{menu,order_date},context){
         return addmenu
 
     }else{
+        let add = await transModel.find(
+            {
+                _id : mongoose.Types.ObjectId(checkTransacation._id),
+                menu:{
+                    $elemMatch:{recipe_id:mongoose.Types.ObjectId(menu[0].recipe_id)}
+                }
+            }
+        )
+        console.log(add)
+        if(add.length > 0){
+            throw new ApolloError("menu sudah ada")
+        }
         for(let status of menu){
             const checkStatus = await recipeModel.findById(status.recipe_id)
             if(checkStatus.status ==="unpublish"){
                 throw new ApolloError("the menu has been unpublished")
             }
         }
-        let add = await transModel.findByIdAndUpdate(checkUser.id,
+        add = await transModel.findByIdAndUpdate(checkTransacation._id,
             {
                 $push:{
                     menu:menu,
