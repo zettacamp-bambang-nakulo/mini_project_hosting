@@ -361,6 +361,9 @@ async function validateStockIngredient(user_id,id, menus){
     //      throw new ApolloError(" amount lebih dari avaible")
     //  }
     let total_all = await getTotal({menu:menus})
+    if(user.saldo < total_all ){
+        throw new ApolloError("less balance")
+        }
     await userModel.updateOne({_id:user_id},
         {
             $set:{
@@ -368,9 +371,6 @@ async function validateStockIngredient(user_id,id, menus){
             }
         }
         )
-         if(user.saldo < total_all ){
-        throw new ApolloError("less balance")
-        }
         if(user.saldo < 0){
             throw new ApolloError("kurang duwit")
         }
