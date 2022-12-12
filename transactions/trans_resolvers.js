@@ -15,9 +15,9 @@ const { get } = require('lodash')
 async function getAllTransaction(parent,{page, limit,last_name_user, recipe_name,order_status,order_date},context){
     // console.log(context.loadUser)
     let User= context.req.user_id    
-    const count_pending = await transModel.find({order_status:"pending"})
-    const count_success = await transModel.find({order_status:"success"})
-    const count_failed = await transModel.find({order_status:"failed"})
+    const count_pending = await transModel.find({user_id:mongoose.Types.ObjectId(User.id),order_status:"pending"})
+    const count_success = await transModel.find({user_id:mongoose.Types.ObjectId(User.id),order_status:"success"})
+    const count_failed = await transModel.find({user_id:mongoose.Types.ObjectId(User.id),order_status:"failed"})
     const count_total = await transModel.find({user_id:mongoose.Types.ObjectId(User.id)}).count()
     let queryAgg= [];
     if(page){
