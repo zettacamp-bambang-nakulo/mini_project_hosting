@@ -386,7 +386,7 @@ async function validateStockIngredient(user_id,id, menus){
 }
 
 async function incomingAdmin(parent,args,context){
-    let User= context.req.user_id  
+    let User= context.req.user_id 
     if(User.role === "admin"){
         const checkAdmin = await transModel.find(
             {
@@ -395,7 +395,9 @@ async function incomingAdmin(parent,args,context){
         )
         let balance = 0
         for(el of checkAdmin){
-            balance += el.total
+            let total_all = await getTotal(el)
+            // console.log(total_all)
+            balance += total_all
         }
         return { balanceAdmin:balance}
     }
