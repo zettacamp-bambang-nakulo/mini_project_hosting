@@ -18,7 +18,7 @@ async function getAllTransaction(parent,{page, limit,last_name_user, recipe_name
     const count_pending = await transModel.find({order_status:"pending"})
     const count_success = await transModel.find({order_status:"success"})
     const count_failed = await transModel.find({order_status:"failed"})
-    const count_total = await transModel.count(count_success + count_failed)
+    const count_total = count_success.length +count_failed.length
     let queryAgg= [];
     if(page){
         queryAgg.unshift(
