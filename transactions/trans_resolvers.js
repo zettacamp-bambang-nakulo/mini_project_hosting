@@ -18,7 +18,9 @@ async function getAllTransaction(parent,{page, limit,last_name_user, recipe_name
     const count_pending = await transModel.find({order_status:"pending"})
     const count_success = await transModel.find({order_status:"success"})
     const count_failed = await transModel.find({order_status:"failed"})
-    const count_total = count_success.length+count_failed.length
+    const count_data_success = await transModel.count({order_status:"success"})
+    const count_data_failed = await transModel.count({order_status:"failed"})
+    const count_total = count_data_success+count_data_failed
     let queryAgg= [];
     if(page){
         queryAgg.unshift(
@@ -30,7 +32,7 @@ async function getAllTransaction(parent,{page, limit,last_name_user, recipe_name
             },
             {
                 $sort :{
-                    order_date:1
+                    _id:-1
                 }
             }
         )
