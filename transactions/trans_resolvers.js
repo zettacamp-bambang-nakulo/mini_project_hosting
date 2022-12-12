@@ -18,7 +18,7 @@ async function getAllTransaction(parent,{page, limit,last_name_user, recipe_name
     const count_pending = await transModel.find({order_status:"pending"})
     const count_success = await transModel.find({order_status:"success"})
     const count_failed = await transModel.find({order_status:"failed"})
-    const count_total = await transModel.count()
+    const count_total = await transModel.count(count_success + count_failed)
     let queryAgg= [];
     if(page){
         queryAgg.unshift(
@@ -371,11 +371,7 @@ async function validateStockIngredient(user_id,id, menus){
                 saldo:user.saldo-=total_all
             }
         }
-        )
-        if(user.saldo < 0){
-            throw new ApolloError("kurang duwit")
-        }
-    
+        )    
      const ValidasiSuccess = await transModel.findByIdAndUpdate(id,{menu:menus, total:total,order_status:"success"},{new:true})
      reduceingredientStock(ingredientMap);
     //  userSaldo
