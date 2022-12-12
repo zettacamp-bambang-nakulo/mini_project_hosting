@@ -18,9 +18,7 @@ async function getAllTransaction(parent,{page, limit,last_name_user, recipe_name
     const count_pending = await transModel.find({order_status:"pending"})
     const count_success = await transModel.find({order_status:"success"})
     const count_failed = await transModel.find({order_status:"failed"})
-    const count_data_success = await transModel.count({order_status:"success"})
-    const count_data_failed = await transModel.count({order_status:"failed"})
-    const count_total = count_data_success+count_data_failed
+    const count_total = await transModel.find({user_id:mongoose.Types.ObjectId(User.id)}).count()
     let queryAgg= [];
     if(page){
         queryAgg.unshift(
@@ -118,6 +116,13 @@ async function getAllTransaction(parent,{page, limit,last_name_user, recipe_name
                 }
             }
         )
+    }
+    if(User.role === "user"){
+        queryAgg.unshift({
+            $match:{
+                user_id:mongoose.Types.ObjectId(User.id)
+             }
+    })
     }
     let getTrans = await transModel.aggregate(queryAgg)
     getTrans.map((el)=>{
