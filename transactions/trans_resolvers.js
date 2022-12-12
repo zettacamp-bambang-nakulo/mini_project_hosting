@@ -388,7 +388,7 @@ async function validateStockIngredient(user_id,id, menus){
 async function incomingAdmin(parent,args,context){
     let User= context.req.user_id  
     if(User.role === "admin"){
-        const checkAdmin = await transModel.findOne(
+        const checkAdmin = await transModel.find(
             {
                 order_status:"success"
             }
