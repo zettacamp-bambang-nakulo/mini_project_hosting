@@ -368,30 +368,27 @@ async function validateStockIngredient(user_id,id, menus){
     //      throw new ApolloError(" amount lebih dari avaible")
     //  }
     let total_all = await getTotal({menu:menus})
+    // console.log(t)
     if(user.saldo < total_all ){
         throw new ApolloError("less balance")
-    } 
-     const ValidasiSuccess = await transModel.findByIdAndUpdate(id,{menu:menus, total:total,order_status:"success"},{new:true})
-     if(ValidasiSuccess.order_status === "success"){
-        await userModel.updateOne({_id:user_id},
-            {
-                $set:{
-                    saldo:user.saldo-=total_all
-                }
+    }
+    await userModel.updateOne({_id:user_id},
+        {
+            $set:{
+                saldo:user.saldo-=total_all
             }
-            )
-        
-     }
+        }
+        )    
+     const ValidasiSuccess = await transModel.findByIdAndUpdate(id,{menu:menus, total:total,order_status:"success"},{new:true})
      reduceingredientStock(ingredientMap);
     //  userSaldo
     return ValidasiSuccess
 }
 
 async function incomingAdmin(parent,args,context){
-    let User= context.req.user_id 
-    
+    let User= context.req.user_id  
     if(User.role === "admin"){
-        const checkAdmin = await transModel.find(
+        const checkAdmin = await transModel.findOne(
             {
                 order_status:"success"
             }
